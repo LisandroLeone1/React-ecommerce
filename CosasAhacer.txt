@@ -1,0 +1,6 @@
+si el producto ya esta agregado al carro, que el toast diga que no pudimos agregarlo al carro
+entender search
+subir a git hub
+filtros responsive
+
+

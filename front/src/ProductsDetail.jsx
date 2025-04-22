@@ -5,10 +5,10 @@ import GetProducts from "./Api.jsx";
 import Contador from "./components/Contador.jsx";
 import { useCart } from "./context/CartContext.jsx";
 import Toast from "./components/Toast.jsx";
-import Breadcrumbs from "./components/Breadcrumbs.jsx";
+import Bread from "./components/Bread.jsx";
 
 const ProductDetail = () => {
-    const { id } = useParams();
+    const { id} = useParams();
     const [producto, setProducto] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -22,6 +22,7 @@ const ProductDetail = () => {
     const [errorColor, setErrorColor] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [productoAgregado, setProductoAgregado] = useState(null);
+    const [toastError, setToastError] = useState(false);
 
 
 
@@ -70,7 +71,7 @@ const ProductDetail = () => {
         return (precio - (precio * descuento / 100)).toFixed(2);
     };
 
-    const { addToCart } = useCart();
+    const { addToCart, cartProducts } = useCart();
 
     const addProduct = () => {
         let hasError = false;
@@ -98,6 +99,13 @@ const ProductDetail = () => {
 
         if (hasError) return;
 
+        const yaEnCarrito = cartProducts.find(
+            (item) =>
+                item.id === producto.id &&
+                item.talle === talleSeleccionado &&
+                item.color === colorSeleccionado
+        );
+
         const nuevoProducto = {
             id: producto.id,
             nombre: producto.nombre,
@@ -111,72 +119,97 @@ const ProductDetail = () => {
             cantidad: cantidad,
             tallesDisponibles: talles
         };
-        addToCart(nuevoProducto);
-        setProductoAgregado(nuevoProducto);
+
+        if (yaEnCarrito) {
+            setToastError(true);
+        } else {
+            addToCart(nuevoProducto);
+            setToastError(false);
+        }
         setShowToast(true);
-        // Ocultar toast después de 3 segundos
-        setTimeout(() => setShowToast(false), 10000);
+        setProductoAgregado(nuevoProducto);
+        
     };
 
+    const crumbs = [ producto.tipo_producto, producto.genero, producto.nombre];
+    console.log(crumbs);
+
     return (
-            <div className="w-[80%] m-auto mt-[30px] relative grid grid-cols-[3fr_2fr] grid-rows-[auto] justify-center min-h-screen gap-5 py-10 pb-15 box-border">
-                <div className="flex gap-4">
-                    <div className="flex flex-col justify-start  gap-[60px] h-[500px]">
+            <div className="w-[80%]  md:w-[90%] lg:w-[90%] m-auto relative grid md:grid-cols-[3fr_2fr] grid-rows-[auto] justify-center min-h-screen gap-5 py-10 pb-15 box-border">
+                <div className="flex flex-col w-full items-center md:items-start lg:flex-row gap-4 mb-10">
+                    <div className="flex flex-row lg:flex-col justify-start gap-[29px] lg:gap-[33px]  lg:h-auto">
                     {producto.imagen_principal && (
-                            <img src={ producto.imagen_principal} alt="" className={`w-[80px] h-[80px] rounded opacity-70 hover:opacity-100 aspect-[16/9] transition duration-300 ${producto.imagen_principal === imagenActual ? 'opacity-100 shadow-md' : ''}`} onClick={() => setImagenActual(producto.imagen_principal)}></img>
+                            <img src={ producto.imagen_principal} alt="" 
+                            className={`w-[90px] h-[80px] lg:min-w-[100px] lg:min-h-[100px]  rounded-lg opacity-70 hover:opacity-100 
+                            aspect-[16/9] transition duration-300 ${producto.imagen_principal === imagenActual ? 'opacity-100 shadow-md' : ''}`}
+                            onClick={() => setImagenActual(producto.imagen_principal)}></img>
                         )}
                         {producto.imagen_secundaria_1 && (
-                            <img src={ producto.imagen_secundaria_1} alt="" className={`w-[80px] h-[80px] rounded opacity-70 hover:opacity-100 aspect-[16/9] transition duration-300 ${producto.imagen_secundaria_1 === imagenActual ? 'opacity-100 shadow-md' : ''}`} onClick={() => setImagenActual(producto.imagen_secundaria_1)}></img>
+                            <img src={ producto.imagen_secundaria_1} alt="" 
+                            className={`w-[90px] h-[80px] lg:min-w-[100px] lg:min-h-[100px] rounded-lg opacity-70 hover:opacity-100
+                            aspect-[16/9] transition duration-300 ${producto.imagen_secundaria_1 === imagenActual ? 'opacity-100 shadow-md' : ''}`} 
+                            onClick={() => setImagenActual(producto.imagen_secundaria_1)}></img>
                         )}
                         {producto.imagen_secundaria_2 && (
-                        <img src={ producto.imagen_secundaria_2} alt="" className={`w-[80px] h-[80px] rounded opacity-70 hover:opacity-100 aspect-[16/9] transition duration-300 ${producto.imagen_secundaria_2 === imagenActual ? 'opacity-100 shadow-md' : ''}`} onClick={() => setImagenActual(producto.imagen_secundaria_2)}></img>
+                        <img src={ producto.imagen_secundaria_2} alt="" 
+                        className={`w-[90px] h-[80px] lg:min-w-[100px] lg:min-h-[100px]
+                            rounded-lg opacity-70 hover:opacity-100 aspect-[16/9] transition duration-300 ${producto.imagen_secundaria_2 === imagenActual ? 'opacity-100 shadow-md' : ''}`}
+                            onClick={() => setImagenActual(producto.imagen_secundaria_2)}></img>
                         )}
                         {producto.imagen_secundaria_3 && (
-                        <img src={ producto.imagen_secundaria_3} alt="" className={`w-[80px] h-[80px] rounded opacity-70 hover:opacity-100 aspect-[16/9] transition duration-300 ${producto.imagen_secundaria_3 === imagenActual ? 'opacity-100 shadow-md' : ''}`}  onClick={() => setImagenActual(producto.imagen_secundaria_3)}></img>
+                        <img src={ producto.imagen_secundaria_3} alt="" 
+                        className={`w-[90px] h-[80px] lg:min-w-[100px] lg:min-h-[100px]  rounded-lg opacity-70 
+                            hover:opacity-100 aspect-[16/9] transition duration-300 ${producto.imagen_secundaria_3 === imagenActual ? 'opacity-100 shadow-md' : ''}`}  
+                            onClick={() => setImagenActual(producto.imagen_secundaria_3)}></img>
                             )}
                     </div>
 
-                    <div className="w-[550px] h-[500px]">
-                    <img src={imagenActual} alt="" className="w-full h-full"></img>
+                    <div className="w-[450px] h-[400px] lg:min-w-[600px] lg:min-h-[500px] overflow-hidden">
+                    <img src={imagenActual} alt="" className="w-full h-full rounded-lg object-cover"></img>
                         <h1 className="mt-[20px] mb-[5px]">{producto.nombre}</h1>
                     </div>
                 </div>
                 <div className="flex flex-col">
-                <Breadcrumbs categorie={producto.tipo_producto} genero={producto.genero}></Breadcrumbs>
+
                     {producto.estado === "sale" ? (
                         <>
-                        <div className="flex justify-between items-center mr-1">
-                            <h4 className="font-medium text-gray-600 text-[18px] uppercase">{producto.marca.nombre}</h4>
+                        <div className="flex justify-between items-center gap-4 mr-1 mb-3">
+                            <Bread crumbs={crumbs} flexClass='flex-wrap' className='uppercase text-[14px] font-normal text-gray-400' />
                             <div className="flex justify-center items-center flex-col text-[12px]
-                        font-bold text-white w-[40px] h-[40px] p-[3px] rounded-full bg-red-500"> 
+                            font-bold text-white min-w-[45px] h-[45px] p-[3px] rounded-full bg-red-500"> 
                                 <p>{producto.descuento}%</p>
                                 <p>OFF</p>
                             </div>
                         </div>
-                        <h3 className="text-[33px] font-bold uppercase">{producto.nombre}</h3>
+                        <h4 className="font-medium text-gray-600 text-[18px] uppercase">{producto.marca.nombre}</h4>
+                        <h3 className="text-[33px] font-bold uppercase leading-tight">{producto.nombre}</h3>
                         <div className="flex items-center mt-[10px] gap-3">
                             <h5 className="line-through text-gray-600">${producto.precio}</h5>
-                            <h5 className="text-[30px] font-normal">${PrecioConDescuento(producto.precio, producto.descuento)}</h5>
+                            <h5 className="text-[34px] font-normal">${PrecioConDescuento(producto.precio, producto.descuento)}</h5>
                         </div>
                         </>
                     ) : 
                         producto.estado === "novedades" ? (
                         <>
-                        <div className="flex justify-between items-center mr-1">
-                            <h4 className="font-medium text-gray-600 text-[18px] uppercase">{producto.marca.nombre}</h4>
+                        <div className="flex justify-between items-center gap-4 mr-1 mb-3">
+                            <Bread crumbs={crumbs} flexClass='flex-wrap' className='uppercase text-[14px] font-normal text-gray-400' />
                             <div class="p-1 bg-cuarto text-white text-[12px] font-bold">
                                 <p>NUEVO</p>
                             </div>
                         </div>
-                        <h3 className="text-[33px] font-bold uppercase">{producto.nombre}</h3>
-                        <h5 className="text-[30px] font-normal">${producto.precio}</h5>      
+                        <h4 className="font-medium text-gray-600 text-[18px] uppercase">{producto.marca.nombre}</h4>
+                        <h3 className="text-[33px] font-bold uppercase leading-tight">{producto.nombre}</h3>
+                        <h5 className="text-[34px] font-normal">${producto.precio}</h5>      
                         </>
 
                     ) : (
                         <>
+                        <div className="mb-3">
+                        <Bread crumbs={crumbs} flexClass='flex-wrap' className='uppercase text-[14px] font-normal text-gray-400' />
+                        </div>
                         <h4 className="font-medium text-gray-600 text-[18px] uppercase">{producto.marca.nombre}</h4>
-                        <h3 className="text-[33px] font-bold uppercase">{producto.nombre}</h3>
-                        <h5 className="text-[30px] font-normal">${producto.precio}</h5>
+                        <h3 className="text-[33px] font-bold uppercase leading-tight">{producto.nombre}</h3>
+                        <h5 className="text-[36px] font-normal">${producto.precio}</h5>
                     </>
                     )}
 
@@ -196,7 +229,7 @@ const ProductDetail = () => {
                         <div className="w-full">
                             
                             {errorColor ? (
-                            <label htmlFor="color" className="block mb-1 text-[13px] text-red-500">
+                            <label htmlFor="color" className="block mb-1 text-[13px] font-medium text-red-500">
                                 Color:  <i class="bi bi-exclamation-circle-fill"></i> Elige una opción 
                             </label>
                             )
@@ -216,7 +249,7 @@ const ProductDetail = () => {
 
                         <div className="w-full">
                         {errorTalle ? (
-                            <label htmlFor="color" className="block mb-1 text-[13px] text-red-500">
+                            <label htmlFor="color" className="block mb-1 font-medium text-[13px] text-red-500">
                                 Talle:  <i class="bi bi-exclamation-circle-fill"></i> Elige una opción 
                             </label>
                             )
@@ -246,23 +279,31 @@ const ProductDetail = () => {
                         )}
                     </div>
                     <div className="flex items-center flex-nowrap mt-2 w-full">
-                        <Contador onChangeNumber={setCantidad}></Contador>
+                    <Contador
+                        value={cantidad}
+                        onIncrement={() => setCantidad(c => c + 1)}
+                        onDecrement={() => setCantidad(c => Math.max(1, c - 1))}
+                        max={producto.stock}
+                    />
+
                         <button className="w-full px[20px] py-[10px] bg-cuarto cursor-pointer border-none text-white font-medium rounded "
                         onClick={addProduct}>Agregar al carro</button>
                     </div>
-
                     {/* MENSAJE DE ERROR AL AGREGAR PRODUCTO */}
-                    {errorStock && (
-                    <p className="text-red-500 text-sm font-medium mt-2"><i class="bi bi-exclamation-circle-fill"></i> No hay suficiente stock para la cantidad seleccionada.</p>
+                    {cantidad === producto.stock && (
+                    <p className="text-red-500 text-[13px] font-medium mt-2">
+                        <i class="bi bi-exclamation-circle-fill mr-2"></i> 
+                        Llegaste al maximo de stock para este producto.
+                    </p>
                     )}
 
                     {/* COMPONENTE QUE MUESTRA EL PRODUCTO AGREGADO AL CARRO */}
                     {showToast && productoAgregado && (
-                        <Toast producto={productoAgregado} onClose={() => setShowToast(false)} />
+                        <Toast producto={productoAgregado} onClose={() => setShowToast(false)} error={toastError} />
                     )}
                     
                     <div className="flex flex-col">
-                        <div className="flex gap-2 mt-8">
+                        <div className="flex gap-2 mt-8 ">
                             <i className="bi bi-house-up"></i>
                             <div>
                                 <h5 className="text-[13px] font-normal">Retiro gratis por nuestro locales</h5>

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import GetProducts from "./Api.jsx";
-import Breadcrumbs from "./components/Breadcrumbs.jsx";
 import { Link } from "react-router-dom";
 import Cards from "./components/Cards.jsx";
+import FiltrosAside from "./components/AsideFilters.jsx";
+import Bread from "./components/Bread.jsx";
 
 const CategoriaPage = () => {
     const { categorie, filtro } = useParams();
-
-
+    const [crumbs, setCrumbs] = useState([categorie, filtro]);
     const [products, setProducts] = useState([]); //guardo los productos
     const [allProducts, setAllProducts] = useState([]); 
     const [allFilters, setAllFilters] = useState({ // obtengo los filtros
@@ -20,6 +20,7 @@ const CategoriaPage = () => {
     const [selectedFilters, setSelectedFilters] = useState([]); // estado para guardar los filtros seleccionados
     const [showAllFilters, setShowAllFilters] = useState(false);
     const [order, setOrder] = useState("");
+    const [mostrarModal, setMostrarModal] = useState(false);
 
     // filtro los productos segun su categoria o si esta en estado 'sale'
     useEffect(() => {
@@ -27,37 +28,36 @@ const CategoriaPage = () => {
             let filteredProducts = data;
 
             if (categorie === "sale") {
-              filteredProducts = filteredProducts.filter(p => p.estado === "sale");
+                filteredProducts = filteredProducts.filter(p => p.estado === "sale");
             } else if (categorie === "marcas") {
-              if (filtro) {
-                filteredProducts = filteredProducts.filter(
-                  p => p.marca.nombre.toLowerCase() === filtro.toLowerCase()
-                );
-              }
+                if (filtro) {
+                    filteredProducts = filteredProducts.filter(
+                    p => p.marca.nombre.toLowerCase() === filtro.toLowerCase());
+                }
             } else {
-              filteredProducts = filteredProducts.filter(
-                p => p.tipo_producto.toLowerCase() === categorie.toLowerCase()
-              );
+                filteredProducts = filteredProducts.filter(
+                    p => p.tipo_producto.toLowerCase() === categorie.toLowerCase());
             }
             
-            // Aplicar filtro por género si existe (en cualquier caso)
             if (filtro && categorie !== "marcas") {
-              filteredProducts = filteredProducts.filter(
-                p => p.genero.toLowerCase() === filtro.toLowerCase()
-              );
+                filteredProducts = filteredProducts.filter(
+                    p => p.genero.toLowerCase() === filtro.toLowerCase());
             }
         
             setProducts(filteredProducts);
             setAllProducts(filteredProducts);
 
-            const colores = new Set();
+            const colores = new Map();
             const marcas = new Set();
             const generos = new Set();
-            const talles = new Set(); // Un único Set para todos los talles
+            const talles = new Set();
             
             // obtengo todos los colores, marcas y generos disponibles
             filteredProducts.forEach(producto => {
-                producto.colores.forEach(color => colores.add(color.nombre));
+                producto.colores.forEach(color => colores.set(color.nombre, {
+                    nombre: color.nombre,
+                    style: color.color_style
+                }));
                 marcas.add(producto.marca.nombre);
                 generos.add(producto.genero);
                 producto.talles_indumentaria?.forEach(talle => talles.add(talle.nombre));
@@ -66,12 +66,11 @@ const CategoriaPage = () => {
             });
             // las guardo como array en allFilters
             setAllFilters({
-                colores: [...colores], 
+                colores: [...colores.values()], 
                 generos: [...generos],
                 marcas: [...marcas],
                 talles: [...talles],
             });
-
             // reseteao los filtros al cambiar de categoria
             setSelectedFilters([]);
         });
@@ -104,7 +103,7 @@ const CategoriaPage = () => {
     useEffect(() => {
         if (selectedFilters.length > 0) {
             const selectedGeneros = selectedFilters.filter(f => allFilters.generos.includes(f));
-            const selectedColores = selectedFilters.filter(f => allFilters.colores.includes(f));
+            const selectedColores = selectedFilters.filter(f => allFilters.colores.some(color => color.nombre === f));
             const selectedMarcas = selectedFilters.filter(f => allFilters.marcas.includes(f));
             const selectedTalles = selectedFilters.filter(f => allFilters.talles.includes(f));
             
@@ -139,6 +138,7 @@ const CategoriaPage = () => {
         setSelectedFilters([]);
     }
 
+
     // ocultar o mostrar todos los filtros en caso de que sean mas de 8
     const showFilters = showAllFilters ? allFilters.talles : allFilters.talles.slice(0, 8);
 
@@ -146,143 +146,109 @@ const CategoriaPage = () => {
 
     const capitalizar = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
+    useEffect(() => {
+        setCrumbs([categorie, filtro].filter(Boolean)); // con filter(Boolean) elimino cuando uno es null o undefined
+    }, [categorie, filtro]);
+
 
     return (
         <div className="max-w-[1350px] mx-auto px-4">
             {/* INTRO ASIDE */}
-            <div className="min-h-[80px] ml-10 mr-4 flex justify-between items-center gap-4" >
-                <Breadcrumbs categorie={categorie} genero={filtro}></Breadcrumbs>
-                <div className="flex gap-5 p-[20px] flex-wrap justify-center">
+            <div className="min-h-[80px] flex flex-col justify-center items-center mt-3
+                md:flex-row md:justify-between md:items-center md:ml-10 md:mr-4 md:gap-4 md:mt-0" >
+
+                <Bread crumbs={crumbs} flexClass='flex-wrap lg:flex-nowrap' className='font-bold text-gray-600'  />
+
+                <div className="mt-4 flex flex-wrap justify-center gap-2 md:gap-5 md:p-[20px] md:w-full  md:mt-0">
                     {selectedFilters.map((filtro) => (
-                    <button onClick={() => deleteFilter(filtro)} value={filtro} className="bg-gray-400 px-[12px] py-[8px] flex items-center justify-center rounded-2xl gap-2 cursor-pointer hover:bg-gray-300">
+                    <button onClick={() => deleteFilter(filtro)} value={filtro} className="bg-gray-300 px-[12px] py-[8px] flex items-center justify-center rounded-2xl gap-2 cursor-pointer hover:bg-gray-200">
                         <h4 className="text-[11px] font-bold">{filtro}</h4>
-                        <span className="text-[11px] font-medium rounded-3xl h-[17px] w-[17px] bg-gray-200 flex items-center justify-center">X</span>
+                        <span className="text-[11px] font-medium rounded-3xl h-[17px] w-[17px] bg-gray-200 hover:bg-gray-300 flex items-center justify-center">
+                            X
+                        </span>
                     </button> 
             ))}
                 {selectedFilters.length > 0 ? <button className="cursor-pointer text-gray-400 hover:text-gray-300 font-bold"
                 onClick={deleteAllFilters}>Borrar filtros</button> : '' }
                 
                 </div>
-                <div>
+                <div className="flex gap-5 mt-5 md:mt-0">
+                    <button
+                        onClick={() => setMostrarModal(true)}
+                        className="md:hidden cursor-pointer shadow-sm flex items-center gap-17 p-3 bg-gray-100 text-gray-700 rounded-md border border-gray-300 hover:border-cuarto transition">
+                            <span className="text-sm font-medium">Filtrar</span>
+                            <i className="bi bi-filter"></i>
+                    </button>
                         <select onChange={(e) => {
                             setOrder(e.target.value)
                             HandleOrderChange(e.target.value)}}
                             value={order}
-                            className=" max-w-[500px] p-3 border border-gray-400 rounded text-[15px] shadow-sm focus:outline-none focus:ring-2 focus:ring-cuarto focus:border-transparent transition duration-200">
+                            className="bg-gray-100 hover:border-cuarto cursor-pointer p-3 border border-gray-300 rounded-md text-[14px] shadow-sm focus:outline-none focus:ring-2 focus:ring-cuarto focus:border-transparent transition duration-200">
                             <option value="">Ordenar por..</option>
                             <option value="precioAsc">Precio: Menor a Mayor</option>
                             <option value="precioDesc">Precio: Mayor a Menor</option>
                             <option value="nombreAsc">Nombre: A - Z</option>
                             <option value="nombreDesc">Nombre: Z - A </option>
                         </select>
+                        
                 </div>
+                
             </div>
 
+            {mostrarModal && (
+                <div className="fixed inset-0 z-1400 w-full h-full md:hidden">
+                    <div className="absolute inset-0 bg-black opacity-40"></div>
+
+                    <div className="bg-white opacity-100 w-[80%] max-w-[600px] h-full overflow-y-auto relative">
+
+                        <div className=" bg-gray-600 flex justify-between items-center p-5">
+                            <h3 className="text-xl font-bold text-gray-200">Filtros</h3>
+                            <button
+                                className=" text-gray-500 hover:text-white text-xl cursor-pointer"
+                                onClick={() => setMostrarModal(false)}
+                            >
+                            <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+                        <div className="p-5">
+                        <FiltrosAside
+                            filtro={filtro}
+                            categorie={categorie}
+                            capitalizar={capitalizar}
+                            generosUnicos={generosUnicos}
+                            allFilters={allFilters}
+                            selectedFilters={selectedFilters}
+                            HandleChange={HandleChange}
+                            products={products}
+                            cerrarModal={() => setMostrarModal(false)}/>
+
+                        </div>
+                    </div>
+                </div>
+                )}
+
         
-        <div className='grid grid-cols-[1fr_5fr]'>
+        <div className='grid md:grid-cols-[1fr_5fr]'>
 
         {/* ASIDE */}
-        <aside className="border-r border-gray-300 ml-[40px]">
-        {!filtro ? (
-            <div className="mb-8">
-                {categorie !== 'marcas'  ? (
-                <>
-                    <h3 className="text-[22px] font-bold mb-[10px]">Genero</h3>
-                    {generosUnicos.map((generos) => (
-                        <ul>
-                            <li className="mb-1">
-                                <Link to={`/${categorie}/${generos}`} className="text-[15px] font-normal text-gray-600 hover:text-gray-400 ">
-                                {capitalizar(generos)}
-                                </Link>
-                            </li>
-                        </ul>
-                    ))}
-                </>
-            ) : (
-                <>
-                    <h3 className="text-[22px] font-bold mb-[10px]">Marcas</h3>
-                    {allFilters.marcas.map((marca) => (
-                        <ul>
-                            <li className="mb-1">
-                                <Link to={`/marcas/${marca}`} className="text-[15px] font-normal text-gray-600 hover:text-gray-400 ">
-                                    {marca}
-                                </Link>
-                            </li>
-                        </ul>
-                    
-                    ))}
-                </>
-                )} 
-            </div>) : (
-                <div>
-                    <Link to={`/${categorie}/`} className="text-[13px] flex items-center mb-[15px] text-gray-400">
-                        <i class="bi bi-caret-left"></i>
-                        <span className="text-[14px] leading-none">{capitalizar(categorie)}</span>
-                    </Link>
-                    <h3 className="text-[22px] font-bold mb-[10px]">Filtrar Por</h3>
-                </div>
-        )}
-            
-
-
-    <h3 className="font-bold text-[16px] mb-2 mt-4">Color</h3>
-    {allFilters.colores.map((color, index) => {
-        // Contamos cuántos productos tienen este color
-        const cantidad = products.filter(producto => producto.colores.some(c => c.nombre === color)).length;
-        return (
-        <label key={index} className="flex mb-[3px] items-center text-gray-700 hover:text-cuarto cursor-pointer">
-            <input type="checkbox" name="color"
-            onChange={HandleChange} checked={selectedFilters.includes(color)} 
-            value={color} className="input-checked mr-2 w-[15px] h-[15px] appearance-none border-2 border-gray-500 hover:border-cuarto  checked:bg-white rounded" />
-            <h5 className="text-[14px] font-normal ml-[10px]">{color} </h5>
-            <span className="text-[13px] font-normal ml-[5px]"> ({cantidad})</span>
-        </label>
-        
-        )
-    })}
-
-<h3 className="font-bold text-[16px] mb-2 mt-[20px]">Marca</h3>
-    {allFilters.marcas.map((marca, index) => {
-        const cantidad = products.filter(producto => producto.marca.nombre === marca).length;
-        return (
-        <label key={index} className="flex mb-[3px] items-center text-gray-700 hover:text-cuarto cursor-pointer">
-            <input type="checkbox" name="color" onChange={HandleChange} 
-            checked={selectedFilters.includes(marca)}  value={marca} 
-            className="input-checked mr-2 w-[15px] h-[15px] appearance-none border-2 border-gray-500 hover:border-cuarto  checked:bg-white rounded" />
-            <h5 className="text-[14px] font-normal ml-[10px]">{marca}</h5>
-            <span className="text-[13px] font-normal ml-[5px]">({cantidad})</span>
-        </label>
-    )
-    })}
-
-<h3 className="font-bold text-[16px] mb-2 mt-[20px]">Talles</h3>
-    {showFilters.map((talle, index) => {
-        const cantidad = products.filter(producto => 
-            (producto.talles_indumentaria?.some(t => t.nombre === talle) || 
-            producto.talles_calzado?.some(t => t.nombre === talle) || 
-            producto.talles_accesorios?.some(t => t.nombre === talle))
-        ).length;
-        return (
-        <label key={index} className="flex mb-[3px] items-center text-gray-700 hover:text-cuarto cursor-pointer">
-            <input type="checkbox" name="talle" onChange={HandleChange} 
-            checked={selectedFilters.includes(talle)}  value={talle} 
-            className="input-checked mr-2 w-[15px] h-[15px] appearance-none border-2 hover:border-cuarto  border-gray-500 checked:bg-white rounded" />
-            <h5 className="text-[14px] font-normal ml-[10px]">{talle}</h5>
-            <span className="text-[13px] font-normal ml-[5px]">({cantidad})</span>
-        </label>
-    )
-    })}
-    {allFilters.talles.length > 8 && (
-        <button onClick={() => {setShowAllFilters(prev => !prev)}} 
-        className="mt-[7px] px-[8px] py-[4px] text-[13px] text-gray-500 border border-gray-500 hover:border-cuarto hover:text-cuarto cursor-pointer rounded-2xl ">
-            {showAllFilters ? "Ver menos" : "Ver todos"}
-        </button>
-    )}
-</aside>
+        <aside className="hidden md:block border-r border-gray-300 ml-[40px]">
+        <FiltrosAside
+                            filtro={filtro}
+                            categorie={categorie}
+                            capitalizar={capitalizar}
+                            generosUnicos={generosUnicos}
+                            allFilters={allFilters}
+                            selectedFilters={selectedFilters}
+                            HandleChange={HandleChange}
+                            products={products}/>
+    </aside>
 
         {/* PRODUCTS CATEGORIA */}
         <div className="grid justify-center gap-[20px] my-[20px] grid-cols-[repeat(auto-fit,_250px)] auto-rows-[390px]">
-            <Cards product={products}></Cards>
+            <Cards product={products} 
+                heigth='h-[443px]'
+                heightHover='h-[390px]'>
+            </Cards>
         </div>  
     </div>
         </div>

@@ -40,15 +40,15 @@ const Search = () => {
 
                 {search && search.length > 1 ? (
                 <div className="bg-white border border-gray-200 rounded-[8px] hover:shadow-[0_4px_20px_rgba(0,0,0,0.8)] z-50 w-full max-h-[440px] overflow-y-auto absolute top-12 ">
-                    <div className="grid grid-cols-2 gap-2 p-2">
+                    <div className="grid  lg:grid-cols-2  gap-2 p-2">
                     {productosFiltrados.map((producto) => (
-                        <div className="h-[100px] bg-sexto border-b border-r border-gray-300 p-2 hover:shadow-xl transition-shadow duration-200">
+                        <div className="min-h-[100px] bg-sexto border-b border-r border-gray-300 p-2 hover:shadow-xl transition-shadow duration-200">
                             <Link to={`/producto/${producto.id}/`} onClick={() => setSearch("")} className="flex gap-4 ">
                                 <img src={producto.imagen_principal} alt="" className="h-[90px] w-[90px]" />
                                 <div className="w-full leading-tight">
                                     <h4 className="uppercase text-[11px] text-gray-600 font-medium">{producto.marca.nombre}</h4>
-                                    <h3 className="uppercase text-[13px] font-bold h-[30px]">{producto.nombre}</h3>
-                                    <h3 className="mt-2 font-bold text-[15px]">${producto.precio}</h3>
+                                    <h3 className="uppercase text-[13px] font-bold">{producto.nombre}</h3>
+                                    <h3 className="mt-4 font-bold text-[15px]">${producto.precio}</h3>
                                     <div className="flex justify-between items-center w-[170px]">
                                         <h5 className="text-gray-500 text-[11px]">3 cuotas de {producto.precio}</h5>
                                         <h6 className="font-bold text-[9px] uppercase">Envio gratis</h6>

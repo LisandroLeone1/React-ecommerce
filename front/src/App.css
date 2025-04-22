@@ -5,6 +5,8 @@ body {
   height: 100%;
   background-color: rgb(242, 245, 248);
   box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+  padding-top:169px;
 }
 
 #root {

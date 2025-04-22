@@ -1,58 +1,111 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import  GetProducts from './Api.jsx'
-import { useParams } from 'react-router-dom';
-import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import Marcas from './components/Marcas.jsx';
+import Cards from './components/Cards.jsx';
+import ImageGallery from './components/ImageGallery.jsx';
+import GeneroGallery from './components/GeneroGallery.jsx';
 import Galeria from './components/CategoriesGallery.jsx';
-
-
-
+import { Link } from 'react-router-dom';
+import InfoExtra from './components/InfoExtra.jsx';
+import LazyComponent from './components/LazyComponent';
 
 
 
 const Products = () => {
     const [products, setProducts] = useState([]);
-    const [img, setImg] = useState(0);
-    const [buttonVisible, setButtonVisible] = useState(0);
 
     useEffect(() => {
         GetProducts().then(data => setProducts(data));
     }, []);
 
+
     const productosSale = products.filter(producto => producto.estado === 'sale');
     const productosNovedades = products.filter(producto => producto.estado === 'novedades');
     const productosDestacados = products.filter(producto => producto.estado === 'destacados');
-
-    const responsive = {
-        superLargeDesktop: {
-          // the naming can be any, depends on you.
-          breakpoint: { max: 4000, min: 3000 },
-          items: 5
-        },
-        desktop: {
-          breakpoint: { max: 3000, min: 1024 },
-          items: 4
-        },
-        tablet: {
-          breakpoint: { max: 1024, min: 464 },
-          items: 3
-        },
-        mobile: {
-          breakpoint: { max: 464, min: 0 },
-          items: 1
-        }
-      };
     
 
     const ProductList = ({ tittle, productos }) => {
         return (
-            <div className='h-[1000px]'>
-                <Galeria></Galeria>
-                <Marcas></Marcas>
-            <h1 className='text-3xl font-bold underline text-center text-gray-400 mt-[30px]'>{tittle}</h1>
-            <div className='w-[90%] m-auto'>
-            <Carousel responsive={responsive}
+            <div className=''>
+                <h1 className='text-3xl font-bold underline text-gray-500 text-center'>{tittle}</h1>
+                <div className="grid justify-center m-5 gap-[30px]  grid-cols-[repeat(auto-fit,_280px)] auto-rows-[410px] mb-4">
+                    <Cards product={productos} 
+                        heigth='h-[473px]'
+                        heightHover='h-[420px]'></Cards>
+                </div>            
+        </div>
+        )
+    };
+
+
+    return (
+        <div>
+    <ImageGallery />
+
+    <LazyComponent>
+        <div className='min-h-[500px]'>
+        <ProductList tittle="Novedades" productos={productosNovedades} />
+        </div>
+        
+    </LazyComponent>
+
+    <LazyComponent>
+        <Marcas />
+    </LazyComponent>
+
+    <LazyComponent>
+        <ProductList tittle="Ofertas" productos={productosSale} />
+    </LazyComponent>
+
+    <LazyComponent>
+        <div className='flex justify-center mt-10 '>
+            <Link className="py-2 px-9 font-medium text-gray-500 rounded bg-septimo border-1 border-gray-300 cursor-pointer hover:shadow-lg">
+            Ver más
+            </Link>
+        </div>
+    </LazyComponent>
+
+    <LazyComponent>
+        <Galeria></Galeria>
+    </LazyComponent>
+
+    <LazyComponent>
+        <GeneroGallery />
+    </LazyComponent>
+        <InfoExtra></InfoExtra>
+        </div>
+    )
+};
+
+export default Products;
+
+
+
+{/*          
+    
+    const responsive = {
+        superLargeDesktop: {
+          // the naming can be any, depends on you.
+            breakpoint: { max: 4000, min: 3000 },
+            items: 5
+        },
+        desktop: {
+            breakpoint: { max: 3000, min: 1024 },
+            items: 4
+        },
+        tablet: {
+            breakpoint: { max: 1024, min: 464 },
+            items: 3
+        },
+        mobile: {
+            breakpoint: { max: 464, min: 0 },
+            items: 1
+        }
+    };
+    
+    
+    <Carousel responsive={responsive}
                 itemClass="px-0 m-1">
             {productos.map((producto) => (
                 <div key={producto.id}
@@ -82,19 +135,4 @@ const Products = () => {
                     </div>
                 </div>
             ))}
-            </Carousel>
-            </div>
-            
-        </div>
-        )
-    };
-
-
-    return (
-        <div>
-            <ProductList tittle="Ofertas" productos={productosSale} />
-        </div>
-    )
-};
-
-export default Products;
+            </Carousel> */}

@@ -1,28 +1,74 @@
 import Modal from "./modal";
-import { useState } from "react";
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { NavLink, Link } from 'react-router-dom';
 import { useCart } from "../context/CartContext.jsx";
 import Search from "./Search.jsx";
 
 
 export const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [showTopBar, setShowTopBar] = useState(true);
 
     const { cantidadProducts } = useCart();
 
+    // funcion para ocultar el primer contenedor del header cuando se hace scroll para abajo
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 200) {
+                setShowTopBar(false);
+            } else {
+                setShowTopBar(true);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll); // si se hace scroll se llama a la funcion HandleScroll
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const Navs = ({ path = "", label }) => {
+        // normalizo el path: si es '' me devuelve '/', sino la barra
+        const fullPath = path === "" ? "/" : `/${path}`;
+    
+        return (
+            <li className=" h-full flex items-center font-medium">
+                <NavLink
+                    to={fullPath}
+                    end // <-- importante para que '/' no se marque como activo en todas las rutas
+                    className={({ isActive }) =>
+                        `w-full h-full flex items-center transition-colors duration-400 px-5 py-3 ${
+                            isActive
+                                ? 'bg-white text-gray-700 border-y border-gray-500'
+                                : 'text-white hover:bg-white hover:text-gray-700 border-y border-gray-500'
+                        }`
+                    }
+                    onClick={() => {setMenuOpen(false);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                >
+                    {label}
+                </NavLink>
+            </li>
+        );
+    };
+
     return (
         <>
-            <header>
-                <div className="h-[35px] p-[5px] relative bg-gray-600">
-                    <div className="flex absolute left-10 top-2 gap-[10px]">
-                        <a className="text-white text-[11px]" href="" title="Ir a Instragram"><i className="bi bi-instagram mr-2 text-[14px]"></i>SportDigital</a>
-                        <a className="text-white text-[11px]" href="" title="Ir a Instragram"><i className="bi bi-facebook mr-2 text-[14px]"></i>SportDigital</a>
-                    </div>
-                    <p className="text-white text-[14px] font-normal text-center">Envios por correo Andreani | Todos los productos en 3 cuotas sin interes</p>
-                </div>
-                <div className="bg-gray-500 h-[80px] flex items-center justify-between px-[40px]">
+        <header className="fixed top-0 left-0 w-full z-1200">
+            <div className={`bg-gray-600 relative  transition-all duration-300 ease-in-out hidden md:block
+            ${showTopBar ? 'h-[35px] p-[5px]' : 'h-0  p-0'}`}>
+    
+    <div className={`absolute left-10 top-2 gap-[10px] ${showTopBar ? 'flex' : 'hidden'}`}>
+        <a className="text-white text-[11px]" href=""><i className="bi bi-instagram mr-2 text-[14px]"></i>SportDigital</a>
+        <a className="text-white text-[11px]" href=""><i className="bi bi-facebook mr-2 text-[14px]"></i>SportDigital</a>
+    </div>
+    <p className={`text-white text-[14px] font-normal text-center ${showTopBar ? 'block' : 'hidden'}`}>
+        Envios por correo Andreani | Todos los productos en 3 cuotas sin interes
+    </p>
+</div>
+
+                <div className="bg-gray-500 h-[80px] flex items-center justify-between gap-4 px-[40px]">
                     <div className="py-[3px] px-[5px]">
-                        <span className="text-3xl text-white font-bold hidden md:block">SportDigital</span>
+                        <span className="text-3xl text-white font-bold hidden lg:block">SportDigital</span>
                     </div>
                     <Search></Search>
                     <div className="hidden md:flex gap-[40px]">
@@ -33,7 +79,7 @@ export const Header = () => {
                         icono3='bi-envelope-at icon'
                         texto2='+543416721106'
                         texto3='sportdigital@gmail.com'
-                        right='40'
+                        right='-20'
                         />
                         <Modal 
                         texto = 'Mi cuenta'
@@ -42,7 +88,7 @@ export const Header = () => {
                         icono3=''
                         texto2='Iniciar sesion'
                         texto3='Crear cuenta'
-                        right='20'
+                        right='35'
                         />
                         <Link to="/cart" 
                                 className="relative text-[9px] decoration-0 text-white flex flex-col items-center p-[5px]">
@@ -54,30 +100,21 @@ export const Header = () => {
                     </div>
                 </div>
                 <div className="">  
-                    <nav className="flex bg-gray-700 border-t border-white">
-                        <button onClick={() => setMenuOpen(!menuOpen)} className="text-[35px] ml-[30px] font-bold cursor-pointer md:hidden"><i class="bi bi-list"></i></button>
-                        <ul className= {`${menuOpen ? 'absolute top-43 left-0 w-full bg-gray-800 flex flex-col items-center p-4 space-y-2': 'hidden md:flex justify-center items-center h-[50px]  w-full bg-gray-700 '}`}>
-                            <li className="px-5 h-full flex items-center hover:bg-amber-100 font-medium text-white hover:text-gray-700">
-                                <Link to="" className="">Inicio</Link>
-                            </li>
-                            <li className="px-5 h-full flex items-center hover:bg-amber-100 font-medium text-white hover:text-gray-700">
-                                <Link to="/Indumentaria" >Indumentaria</Link>
-                            </li>
-                            <li className="px-5 h-full flex items-center hover:bg-amber-100 font-medium text-white hover:text-gray-700">
-                                <Link to="/calzado" >Calzado</Link>
-                            </li>
-                            <li className="px-5 h-full flex items-center hover:bg-amber-100 font-medium text-white hover:text-gray-700">
-                                <Link to="/accesorios">Accesorios</Link>
-                            </li>
-                            <li className="px-5 h-full flex items-center hover:bg-amber-100 font-medium text-white hover:text-gray-700">
-                                <Link to="/marcas">Marcas</Link>
-                            </li>
-                            <li className="px-5 h-full flex items-center hover:bg-amber-100 font-medium text-white hover:text-gray-700">
-                                <Link to="">Contacto</Link>
-                            </li>
-                            <li className="px-3 border-2 border-white h-[25px] flex items-center hover:bg-red-400 font-medium text-white hover:text-gray-700">
-                                <Link to="/sale" >Sale</Link>
-                            </li>
+                    <nav className="flex bg-gray-700 border-t border-white relative">
+                        <button onClick={() => setMenuOpen(!menuOpen)} 
+                            className="text-[45px] text-white ml-[30px] font-bold cursor-pointer  md:hidden">
+                                <i class={`bi bi-list ${menuOpen ? 'border-2 border-white rounded' : ''}`}></i>
+                        </button>
+                        <ul className= {`${menuOpen ? 
+                            'absolute top-21 z-100 left-0 border-y border-white w-full bg-gray-700 flex flex-col'
+                            : 'hidden md:flex justify-center items-center h-[50px]  w-full bg-gray-700 '}`}>
+                            <Navs path='' label="Inicio" />
+                            <Navs path='Indumentaria' label="Indumentaria" />
+                            <Navs path='calzado' label="Calzado" />
+                            <Navs path='accesorios' label="Accesorios" />
+                            <Navs path='marcas' label="Marcas" />
+                            <Navs path='' label="Contacto" />
+                            <Navs path='sale' label="Sale" />
                         </ul>
 
                         <div className="w-full mr-[30px] flex justify-end md:hidden gap-[40px]">

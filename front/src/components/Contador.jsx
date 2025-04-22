@@ -1,35 +1,50 @@
 import { useState } from "react";
-import "./Contador.css";
+import { BiLoaderAlt } from "react-icons/bi";
 
-const Contador = ( {onChangeNumber}) => {
-    const [Numero, setNumero] = useState(1);  // Empieza en 1, no en 0
-    const [buttonActive, setButtonActive] = useState(false);
+const Contador = ({ value = 1, onIncrement, onDecrement, min = 1, max = Infinity }) => {
+    const [loading, setLoading] = useState(false);
 
-    const aumentarNumero = () => {
-        const newNumber = Numero + 1;
-        setNumero(newNumber);
-        onChangeNumber(newNumber);
-
-    }
-    const disminuirNumero = () => {
-        if (Numero > 1) {
-            const newNumber = Numero - 1;
-            setNumero(newNumber);
-            onChangeNumber(newNumber);
-            setButtonActive(true);
-        } else {
-            setButtonActive(!buttonActive);
+    const handleIncrement = () => {
+        if (value < max && !loading) {
+            onIncrement();
+            setLoading(true);
+            setTimeout(() => setLoading(false), 400);
         }
     };
 
-    
+    const handleDecrement = () => {
+        if (value > min && !loading) {
+            onDecrement();
+            setLoading(true);
+            setTimeout(() => setLoading(false), 400);
+        }
+    };
+
+
     return (
-            <div className="contador">
-                <button className={`boton-contador ${Numero > 1 ? 'text-cuarto cursor-pointer' : 'text-gray-500'}`}
-                        onClick={disminuirNumero} >- </button>
-                <span className="cantidad">{Numero}</span>
-                <button className="text-cuarto cursor-pointer boton-contador" onClick={aumentarNumero}>+</button>
+        <div className="">
+            <div className=" flex items-center justify-around mr-5 border border-gray-400 rounded-lg min-w-[100px] max-w-[150px]">
+                <button
+                    className={`text-[29px] font-medium ${value > min ? 'text-cuarto cursor-pointer' : 'text-gray-500'}`}
+                    onClick={handleDecrement}
+                    disabled={loading}
+                >
+                    -
+                </button>
+                {loading ? (
+                    <BiLoaderAlt className="animate-spin text-cuarto text-lg" />
+                ) : (
+                    <span className="text-[15px]">{value}</span>
+                )}
+                <button
+                    className={`text-[29px] font-medium ${value < max ? 'text-cuarto cursor-pointer' : 'text-gray-500'}`}
+                    onClick={handleIncrement}
+                    disabled={loading}
+                >
+                    +
+                </button>
             </div>
+        </div>
     );
 };
 

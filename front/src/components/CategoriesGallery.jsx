@@ -23,7 +23,7 @@ const categorias = [
 
 export default function Galeria() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 mx-15">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 mx-15 mt-15">
     {categorias.map((cat, index) => (
         <Link
             key={index}

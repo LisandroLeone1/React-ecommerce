@@ -28,6 +28,8 @@ const Marcas = () => {
         });
     }, []);
 
+    console.log('renderizando marcas');
+
     const responsive = {
         superLargeDesktop: {
           // the naming can be any, depends on you.
@@ -36,27 +38,30 @@ const Marcas = () => {
         },
         desktop: {
           breakpoint: { max: 3000, min: 1024 },
-          items: 6
+          items: 4
         },
         tablet: {
           breakpoint: { max: 1024, min: 464 },
-          items: 4
+          items: 2
         },
         mobile: {
           breakpoint: { max: 464, min: 0 },
-          items: 1
+          items: 2
         }
       };
     
         return (
-            <div className='bg-septimo flex items-center  justify-center h-[210px] '>
+            <div className='bg-septimo flex items-center  justify-center h-[210px] mb-8 mt-20  '>
             <div className='w-[90%] m-auto '>
             <Carousel responsive={responsive}
+                  autoPlay={true}
+                  autoPlaySpeed={2000}
+                  infinite={false}
                 itemClass="px-0 m-0">
                     {Marca.map((m) => (
-                        <Link to={`/marcas/${m.nombre}`}
-                            className='bg-septimo flex items-center justify-center h-[160px] w-[170px]'>
-                                <img src={m.imagen} alt="" className='h-[130px] w-[160px] opacity-40 hover:opacity-70 transition-opacity duration-300 rounded-md' />            
+                        <Link key={m.id} to={`/marcas/${m.nombre}`}
+                            className='bg-septimo flex items-center justify-center gap-4 h-[160px] w-[170px]'>
+                                <img src={m.imagen} alt="" className='h-[130px] w-[160px] opacity-40 hover:opacity-90 transition-opacity duration-300 rounded-md' />            
                         </Link>
 
                     ))}

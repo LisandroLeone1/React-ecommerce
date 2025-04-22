@@ -53,18 +53,18 @@ export const CartProvider = ({ children }) => {
         ))
     }
 
-    const aumentarCantidad = (id) => {
+    const aumentarCantidad = (id, talleActual) => {
         setCartProducts((prev) => 
         prev.map(item => 
-            item.id === id && item.cantidad < item.stock ? {...item, cantidad: item.cantidad + 1}
+            item.id === id && item.talle === talleActual && item.cantidad < item.stock ? {...item, cantidad: item.cantidad + 1}
             : item
         ));
     };
 
-    const disminuirCantidad = (id) => {
+    const disminuirCantidad = (id, talleActual) => {
         setCartProducts((prev) => 
         prev.map(item =>
-            item.id === id && item.cantidad > 1 
+            item.id === id && item.talle === talleActual && item.cantidad > 1 
             ? {...item, cantidad: item.cantidad - 1}
             : item
         ));

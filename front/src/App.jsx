@@ -1,29 +1,30 @@
-import { useState } from 'react'
+
 import './App.css'
-import Header from './components/header'
-import Products from './Products'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import CategoriaPage from './Categories';
-import ProductDetail from './ProductsDetail';
-import Cart from './Cart';
+import { lazy, Suspense } from 'react';
+import Header from './components/header'
+const Products = lazy(() => import('./Products'));
+const CategoriaPage = lazy(() => import('./Categories'));
+const ProductDetail = lazy(() => import('./ProductsDetail'));
+const Cart = lazy(() => import('./Cart'));
+import Loader from './components/Loader';
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
-    <Router>
-      <Header /> {/* Barra de navegación */}
+  <Router>
+    <Header />
+    <Suspense fallback={<Loader />} >
       <Routes>
-        {/* Rutas para las categorías */}
-        <Route path="/" element={<Products />} /> {/* Página principal */}
+        <Route path="/" element={<Products />} />
         <Route path="/:categorie" element={<CategoriaPage />} />
         <Route path="/:categorie/:filtro" element={<CategoriaPage />} />
         <Route path="/producto/:id/" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
-
       </Routes>
-    </Router>
+    </Suspense>
+  </Router>
     </>
   )
 }

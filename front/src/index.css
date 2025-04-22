@@ -8,6 +8,7 @@
     --color-quinto: #dfe9f7;
     --color-sexto: rgb(242, 245, 248);
     --color-septimo: rgb(226, 231, 243);
+    --color-octavo: rgba(0,0,0,.1);
 }
 
 .input-checked:checked {
@@ -27,3 +28,4 @@
     font-size: 13px; /* Ajusta el tamaño del check */
     font-weight: 900; /* Grosor del check */
 }
+

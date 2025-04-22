@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 
 const Breadcrumbs = ({ categorie, genero }) => {
     return (
-        <div className="flex items-center gap-1 text-gray-600 text-sm">
-            <Link to="/" className="hover:underline">Home</Link>
+        <div className="flex items-center flex-wrap lg:flex-nowrap gap-1 text-gray-600 text-sm">
+            <Link to="/" className="hover:text-gray-400">Home</Link>
             <span>{'>'}</span>
             {genero ? (
                 <>

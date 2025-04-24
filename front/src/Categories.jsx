@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import GetProducts from "./Api.jsx";
-import { Link } from "react-router-dom";
 import Cards from "./components/Cards.jsx";
 import FiltrosAside from "./components/AsideFilters.jsx";
 import Bread from "./components/Bread.jsx";

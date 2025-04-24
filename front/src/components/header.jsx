@@ -3,13 +3,18 @@ import { useState, useEffect } from "react";
 import { NavLink, Link } from 'react-router-dom';
 import { useCart } from "../context/CartContext.jsx";
 import Search from "./Search.jsx";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 
 export const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [showTopBar, setShowTopBar] = useState(true);
+    const[isOpen, setIsOpen] = useState(false);
 
     const { cantidadProducts } = useCart();
+    const { user, logout} = useAuth(); 
+    const navigate = useNavigate();
 
     // funcion para ocultar el primer contenedor del header cuando se hace scroll para abajo
     useEffect(() => {
@@ -24,6 +29,11 @@ export const Header = () => {
         window.addEventListener('scroll', handleScroll); // si se hace scroll se llama a la funcion HandleScroll
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    const Logout = () => {
+        logout();
+        navigate('/')
+    }
 
     const Navs = ({ path = "", label }) => {
         // normalizo el path: si es '' me devuelve '/', sino la barra
@@ -81,15 +91,42 @@ export const Header = () => {
                         texto3='sportdigital@gmail.com'
                         right='-20'
                         />
-                        <Modal 
-                        texto = 'Mi cuenta'
-                        icono = 'bi-person-fill'
-                        icono2=''
-                        icono3=''
-                        texto2='Iniciar sesion'
-                        texto3='Crear cuenta'
-                        right='35'
-                        />
+                        <div>
+                            <div onMouseEnter={() => setIsOpen(true)}
+                                onMouseLeave={() => setIsOpen(false)} 
+                                className="relative cursor-pointer text-[9px] decoration-0 text-white flex flex-col items-center p-[5px]">
+                                <i className='bi bi-person-fill text-[40px]'></i>
+                                {user ? (<p>{`¡Hola ${user.username}!`}</p>): 'Mi cuenta'}
+                            </div>
+                            {isOpen && (
+                                <div onMouseEnter={() => setIsOpen(true)}
+                                    onMouseLeave={() => setIsOpen(false)}
+                                    className='absolute z-1300 flex flex-col left-284 bg-gray-600 text-white font-medium shadow-xl rounded-lg p-3 gap-1 text-[13px]'>
+                                    {user ? (
+                                        <>
+                                            <Link to='/account' className="text-white cursor-pointer hover:text-gray-300 transition duration-300">
+                                                Tu cuenta
+                                            </Link>
+                                            <button onClick={Logout} className="text-white cursor-pointer hover:text-gray-300 transition duration-300">
+                                                Cerrar sesión
+                                            </button>
+                                        </>
+                                        
+                                    ) : (
+                                        <>
+                                            <Link to='/login' className="text-white cursor-pointer hover:text-gray-300 transition duration-300">
+                                                Iniciar sesión
+                                            </Link>
+                                            <Link to="/register" className="text-white cursor-pointer hover:text-gray-300 transition duration-300">
+                                                Crear cuenta
+                                            </Link>
+                                        </>
+                                    )}
+                                    
+                                </div>
+                            )}
+                        </div>
+                        
                         <Link to="/cart" 
                                 className="relative text-[9px] decoration-0 text-white flex flex-col items-center p-[5px]">
                                 <i className="bi bi-cart4 text-[40px]"></i>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const Modal = ({icono, texto, icono2, icono3, texto2, texto3, right, showModal = true}) => {
+const Modal = ({icono, texto, icono2, icono3, texto2, texto3, path, path2, right, showModal = true}) => {
     const[isOpen, setIsOpen] = useState(false);
 
     return (
@@ -17,8 +17,8 @@ const Modal = ({icono, texto, icono2, icono3, texto2, texto3, right, showModal =
                 onMouseEnter={() => setIsOpen(true)}
                 onMouseLeave={() => setIsOpen(false)}
                 className={`absolute z-1300 flex flex-col left-${right } bg-gray-500 text-white font-medium shadow-lg rounded-lg p-3 gap-1 text-[13px]`}>
-                    <a href=""><i className={`bi ${ icono2 }`}></i> {texto2}</a>
-                    <a href=""><i className={`bi ${ icono3 }`}></i> {texto3}</a>
+                    <Link to={`/${path}`}><i className={`bi ${ icono2 }`}></i> {texto2}</Link>
+                    <Link to={`/${path2}`}><i className={`bi ${ icono3 }`}></i> {texto3}</Link>
                 </div>
             )}
 

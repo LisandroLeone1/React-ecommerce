@@ -12,7 +12,7 @@ export const Header = () => {
     const [showTopBar, setShowTopBar] = useState(true);
     const[isOpen, setIsOpen] = useState(false);
 
-    const { cantidadProducts } = useCart();
+    const { cantidadProducts, emptyCart } = useCart();
     const { user, logout} = useAuth(); 
     const navigate = useNavigate();
 
@@ -107,7 +107,11 @@ export const Header = () => {
                                             <Link to='/account' className="text-white cursor-pointer hover:text-gray-300 transition duration-300">
                                                 Tu cuenta
                                             </Link>
-                                            <button onClick={Logout} className="text-white cursor-pointer hover:text-gray-300 transition duration-300">
+                                            <button onClick={() => {
+                                                Logout();
+                                                emptyCart();
+                                                }} 
+                                                className="text-white cursor-pointer hover:text-gray-300 transition duration-300">
                                                 Cerrar sesión
                                             </button>
                                         </>

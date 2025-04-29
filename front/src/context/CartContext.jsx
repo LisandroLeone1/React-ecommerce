@@ -10,7 +10,7 @@ export const CartProvider = ({ children }) => {
         setCartProducts((prev) => {
             const existingProduct = prev.find(item =>
                 item.id === product.id &&
-                item.color === product.color &&
+                item.color.id === product.color.id &&
                 item.talle === product.talle
             );
     
@@ -28,7 +28,7 @@ export const CartProvider = ({ children }) => {
         setCartProducts((prev) => prev.filter(item => 
                                     !(item.id === id &&
                                     item.talle === talle &&
-                                    item.color === color)
+                                    item.color.id === color)
                                 ));
     };
 
@@ -72,6 +72,7 @@ export const CartProvider = ({ children }) => {
 
     return (
         <CartContext.Provider value={{ cartProducts, 
+        setCartProducts,
         addToCart, 
         deleteToCart, 
         emptyCart, 

@@ -14,7 +14,7 @@ const ProductDetail = () => {
     const [loading, setLoading] = useState(true);
     const [imagenActual, setImagenActual] = useState(null);
     const [VentanaVisible, setVentanaVisible] = useState(false);
-    const [colorSeleccionado, setColorSeleccionado] = useState("");
+    const [colorSeleccionado, setColorSeleccionado] = useState({});
     const [talleSeleccionado, setTalleSeleccionado] = useState("");
     const [cantidad, setCantidad] = useState(1);
     const [errorStock, setErrorStock] = useState(false);
@@ -39,7 +39,8 @@ const ProductDetail = () => {
             };
             fetchProduct();
         }, [id]);
-    console.log(producto);
+    
+    console.log("productos a agregar:", JSON.stringify(producto));
 
     useEffect(() => {
         if(producto) {
@@ -47,7 +48,7 @@ const ProductDetail = () => {
         }
     }, [producto]);
 
-    console.log(colorSeleccionado);
+    console.log("color: ", JSON.stringify(colorSeleccionado, null, 2));
     console.log(talleSeleccionado);
 
     if (loading) return <p>Cargando producto...</p>;
@@ -60,8 +61,6 @@ const ProductDetail = () => {
         ...producto.talles_calzado,
         ...producto.talles_accesorios
     ];
-
-    console.log(talles);
 
     const PrecioEnCuotas = (precio) => {
         return (precio / 3).toFixed(2);
@@ -113,7 +112,7 @@ const ProductDetail = () => {
             precio: producto.precio,
             descuento: producto.descuento,
             stock: producto.stock,
-            imagen: producto.imagen_principal,
+            imagen_principal: producto.imagen_principal,
             color: colorSeleccionado,
             talle: talleSeleccionado,
             cantidad: cantidad,
@@ -132,7 +131,7 @@ const ProductDetail = () => {
     };
 
     const crumbs = [ producto.tipo_producto, producto.genero, producto.nombre];
-    console.log(crumbs);
+
 
     return (
             <div className="w-[80%]  md:w-[90%] lg:w-[90%] m-auto relative grid md:grid-cols-[3fr_2fr] grid-rows-[auto] justify-center min-h-screen gap-5 py-10 pb-15 box-border">
@@ -237,10 +236,15 @@ const ProductDetail = () => {
                                 <label htmlFor="color" className="block text-gray-600 mb-1 text-[12px]">Color</label>
                             )}
                             <select name="color" id="color" className="w-full p-3 border border-gray-400 rounded text-[15px] shadow-sm focus:outline-none focus:ring-2 focus:ring-cuarto focus:border-transparent transition duration-200"
-                            value={colorSeleccionado} onChange={(e) => setColorSeleccionado(e.target.value)}> 
+                            value={colorSeleccionado?.id || ""} onChange={(e) => { 
+                                const id = parseInt(e.target.value);
+                                const colorObj = producto.colores.find(color => color.id === id);
+                                setColorSeleccionado(colorObj);
+
+                            }}> 
                             <option value="" disabled>Elegí un color</option>
                             {producto.colores.map((color) => (
-                                <option key={color.id} value={color.nombre} className="p-1 ">
+                                <option key={color.id} value={color.id} className="p-1 ">
                                 {color.nombre}
                                 </option>
                     ))}

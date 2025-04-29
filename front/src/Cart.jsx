@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useCart } from "./context/CartContext.jsx";
 import Contador from "./components/Contador.jsx";
 import { Link } from "react-router-dom";
 import { BiLoaderAlt } from "react-icons/bi";
+import { useAuth } from "./context/AuthContext";
+import { toast } from 'react-toastify';
 
 
 
@@ -13,17 +15,21 @@ const Cart = () => {
     const [nuevoTalle, setNuevoTalle] = useState('');
     const [nuevaCantidad, setNuevaCantidad] = useState('');
     const [loadingId, setLoadingId] = useState(null);
+    const [isCartLoaded, setIsCartLoaded] = useState(false);
+
 
 
     const { cartProducts, 
+        setCartProducts,
         aumentarCantidad,
         disminuirCantidad, 
         deleteToCart, 
+        emptyCart,
         actualizarProducto,
         calcularTotalConDescuento, 
         cantidadProducts} = useCart();
 
-    console.log(`productos del carro ${cartProducts}`);
+    console.log("productos del carro", JSON.stringify(cartProducts, null, 2));
 
     const PrecioConDescuento = (precio, descuento, cantidad) => {
             return ((precio - (precio * descuento / 100))* cantidad).toFixed(0);
@@ -54,6 +60,53 @@ const Cart = () => {
         }, 1000); // Lo que tarde el loader
     };
 
+
+
+    const { token, logout } = useAuth();
+    const toastMostrado = useRef(false);
+    useEffect(() => {
+        if (!token) return;
+        if (cartProducts.length > 0) {
+            const sendCartToBackend = async () => {
+                const productosLimpios = cartProducts.map(producto => ({
+                    producto: producto.id,
+                    cantidad: producto.cantidad,
+                    talle: producto.talle,
+                    color: producto.color.id
+                }));
+    
+                try {
+                    const response = await fetch("http://localhost:8000/cart/api/carrito/agregar/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`,
+                        },
+                        body: JSON.stringify({ productos: productosLimpios })
+                    });
+    
+                    const data = await response.json();
+    
+                    // ⚡ Manejo de expiración de token
+                    if (response.status === 401 || data.code === "token_not_valid") {
+                        if (!toastMostrado.current) {
+                            toastMostrado.current = true;
+                            toast.error("Tu sesión expiró. Por favor, iniciá sesión nuevamente.");}
+                        logout(); // llamás a tu función logout
+                        emptyCart();
+                    } else {
+                        console.log("Respuesta del backend:", data);
+                    }
+                } catch (error) {
+                    console.error("Error al enviar el carrito:", error);
+                }
+            };
+    
+            sendCartToBackend();
+        }
+    }, [cartProducts, token]);
+
+
     return (
         <>
             <div className="w-[90%] mx-auto grid gap-[50px] mt-3 mb-40 lg:mb-4  grid-cols-1 lg:grid-cols-[minmax(500px,800px)_350px]">
@@ -69,13 +122,13 @@ const Cart = () => {
                                     ) : (
                                     <div className="flex lg:items-center gap-5 py-2 border-b border-gray-300">
                                         <div>
-                                            <img src={product.imagen} alt="" className="w-[180px] h-[140px]" />
+                                            <img src={product.imagen_principal} alt="" className="w-[180px] h-[140px]" />
                                         </div>
                                         <div className="flex flex-col md:flex-row justify-between gap-1 w-full">
                                             <div>
                                                 <h3 key={index} className="font-bold leading-tight text-[14px]">{product.nombre}</h3>
                                                 <h4 className="leading-tight text-[13px] font-medium mb-2">{product.marca}</h4>
-                                                <h5 className="text-[11px] text-gray-500">Color: {product.color}</h5>
+                                                <h5 className="text-[11px] text-gray-500">Color: {product.color.nombre}</h5>
                                                 <h5 className="text-[11px]  text-gray-500">Talle: {product.talle}</h5>
                                                 <div className="text-cuarto text-[12px] font-bold mt-3">
                                                     <button onClick={() => abrirModal(product)}
@@ -83,7 +136,7 @@ const Cart = () => {
                                                             Modificar
                                                     </button>
                                                     <button className="cursor-pointer hover:underline mr-4" 
-                                                        onClick={() => handleLoading(product.id, product.talle, product.color)}>
+                                                        onClick={() => handleLoading(product.id, product.talle, product.color.id)}>
                                                             Eliminar
                                                     </button>
                                                     <Link to={`/producto/${product.id}`}
@@ -159,7 +212,7 @@ const Cart = () => {
                             <div className="bg-white rounded-xl  w-[90%] max-w-[700px] grid grid-cols-2 h-[490px]">
                                 <div className="bg-sexto">
                                     <div className="p-8">
-                                        <img src={productoSeleccionado.imagen} alt="" />
+                                        <img src={productoSeleccionado.imagen_principal} alt="" />
                                         <h2 className="mt-4 font-normal text-[17px] text-gray-500">{productoSeleccionado.nombre}</h2>
                                         <h3 className="mt-1 mb-3 text-[17px] font-medium">${productoSeleccionado.precio}</h3>
                                         <Link to={`/producto/${productoSeleccionado.id}`}
@@ -174,7 +227,7 @@ const Cart = () => {
                                         <button className="text-cuarto cursor-pointer font-bold text-[17px] hover:text-quinto" onClick={() => setModalOpen(!modalOpen)}><i class="bi bi-x-lg"></i></button>
                                     </div>
                                     <h3 className="mt-7 ">
-                                            Color: <span className="font-medium">{productoSeleccionado.color}</span>
+                                            Color: <span className="font-medium">{productoSeleccionado.color.nombre}</span>
                                     </h3>
                                     <div className="w-[100%] mt-10">
                                         <label htmlFor="talle" className="block mb-1 text-gray-700 text-[12px]">Talle</label>
@@ -233,7 +286,9 @@ const Cart = () => {
                             <p className="font-bold text-[20px]">Total</p>
                             <p className="font-bold text-[20px]">${total}</p>
                         </div>
-                        <button className="w-full mt-1 md:mt-4 px[20px] py-[10px] bg-cuarto cursor-pointer border-none text-white font-medium rounded">Comprar</button>
+                        <button className="w-full mt-1 md:mt-4 px[20px] py-[10px] bg-cuarto cursor-pointer border-none text-white font-medium rounded">
+                            Comprar
+                        </button>
                         <button className="w-full mt-1 px[20px] py-[10px] bg-quinto cursor-pointer border-none text-cuarto font-medium rounded hidden lg:block">Ver mas productos</button>
                     </div>
             </div>

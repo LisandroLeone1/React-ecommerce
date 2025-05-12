@@ -1,4 +1,6 @@
 import { createContext, useState, useContext } from "react";
+import { useAuth } from "./AuthContext.jsx";
+
 
 const CartContext = createContext();
 
@@ -6,12 +8,14 @@ export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
     const [cartProducts, setCartProducts] = useState([]);
+    const { token } = useAuth();
+
     const addToCart = (product) => { 
         setCartProducts((prev) => {
             const existingProduct = prev.find(item =>
                 item.id === product.id &&
                 item.color.id === product.color.id &&
-                item.talle === product.talle
+                item.talle.id === product.talle.id
             );
     
             if (existingProduct) {
@@ -22,17 +26,47 @@ export const CartProvider = ({ children }) => {
         });
     };
 
-    
 
-    const deleteToCart = (id, talle, color) => {
-        setCartProducts((prev) => prev.filter(item => 
-                                    !(item.id === id &&
-                                    item.talle === talle &&
-                                    item.color.id === color)
-                                ));
+    const vaciarCarritoEnBackend = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            await fetch(`http://localhost:8000/cart/api/carrito/vaciar-carrito/`, {
+                method: "DELETE",
+                headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            });
+            setCartProducts([])
+        } catch (error) {
+            console.error("Error al vaciar el carrito en el backend", error);
+        }
     };
 
+    const deleteToCart = (id, talle, color) => {
+        setCartProducts((prev) => {
+            const updatedCart = prev.filter(
+            (item) =>
+              !(
+                item.id === id &&
+                item.talle.id === talle &&
+                item.color.id === color
+              )
+          );
+      
+          if (updatedCart.length === 0) {
+            vaciarCarritoEnBackend(); // Vacía el carrito en el backend y frontend
+          } else {
+            setCartProducts(updatedCart); // Actualiza el carrito en el frontend
+          }
+      
+          return updatedCart;
+        });
+      };
+
     const emptyCart = () => setCartProducts([]);
+
+   
 
     const calcularTotalConDescuento = (cartProducts) => {
         return cartProducts.reduce((total, producto) => {
@@ -47,7 +81,7 @@ export const CartProvider = ({ children }) => {
     const actualizarProducto = (id, talleActual, CantidadActual, nuevoTalle, nuevaCantidad) => {
         setCartProducts((prev) => 
         prev.map(item =>
-            item.id === id && item.talle === talleActual && item.cantidad === CantidadActual ? 
+            item.id === id && item.talle.id === talleActual.id && item.cantidad === CantidadActual ? 
             {...item, cantidad: nuevaCantidad, talle: nuevoTalle}
             : item
         ))
@@ -56,7 +90,7 @@ export const CartProvider = ({ children }) => {
     const aumentarCantidad = (id, talleActual) => {
         setCartProducts((prev) => 
         prev.map(item => 
-            item.id === id && item.talle === talleActual && item.cantidad < item.stock ? {...item, cantidad: item.cantidad + 1}
+            item.id === id && item.talle.id === talleActual && item.cantidad < item.stock ? {...item, cantidad: item.cantidad + 1}
             : item
         ));
     };
@@ -64,7 +98,7 @@ export const CartProvider = ({ children }) => {
     const disminuirCantidad = (id, talleActual) => {
         setCartProducts((prev) => 
         prev.map(item =>
-            item.id === id && item.talle === talleActual && item.cantidad > 1 
+            item.id === id && item.talle.id === talleActual && item.cantidad > 1 
             ? {...item, cantidad: item.cantidad - 1}
             : item
         ));
@@ -76,6 +110,7 @@ export const CartProvider = ({ children }) => {
         addToCart, 
         deleteToCart, 
         emptyCart, 
+        vaciarCarritoEnBackend,
         calcularTotalConDescuento,
         cantidadProducts,
         aumentarCantidad, 

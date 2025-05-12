@@ -73,17 +73,26 @@ import { useNavigate } from "react-router-dom";
                         {errores.last_name && <span className="text-red-500 text-[13px]">{errores.last_name}</span>}
                     </div>
                     <div className="flex flex-col gap-2">
-                        <label htmlFor="address" className="text-[14px] text-gray-500">Dirección</label>
+                        <label htmlFor="address" className="text-[14px] text-gray-500">
+                            Dirección
+                            <span className="text-[11px]"> (opcional)</span>
+                        </label>
                         <input id="address" name="address" onChange={handleChange} value={newUser.address}
                         className="p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cuarto" />
                     </div>
                     <div className="flex flex-col gap-2">
-                        <label htmlFor="phone_number" className="text-[14px] text-gray-500">Numero de telefono</label>
+                        <label htmlFor="phone_number" className="text-[14px] text-gray-500">
+                            Numero de telefono
+                            <span className="text-[11px]"> (opcional)</span>
+                        </label>
                         <input id="phone_number" name="phone_number" onChange={handleChange} value={newUser.phone_number}
                         className="p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cuarto" />
                     </div>
                     <div className="flex flex-col gap-2">
-                        <label htmlFor="birth_date" className="text-[14px] text-gray-500">Fecha de Nacimiento</label>
+                        <label htmlFor="birth_date" className="text-[14px] text-gray-500">
+                            Fecha de Nacimiento
+                            <span className="text-[11px]"> (opcional)</span>
+                        </label>
                         <input id="birth_date" name="birth_date" onChange={handleChange} value={newUser.birth_date}
                         className="p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cuarto" />
                     </div>

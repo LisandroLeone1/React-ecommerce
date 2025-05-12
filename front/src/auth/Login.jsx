@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import { useNavigate, useLocation } from "react-router-dom";
+import Input from "../components/Inputs";
 
 
 const Login = () => {
@@ -41,18 +42,24 @@ const Login = () => {
             <h2 className="text-3xl mb-5 mt-5 font-bold text-center text-secundario">Iniciar Sesión</h2>
             {mensajeExito && ( <p className="text-gray-500 text-center mb-2">¡{mensajeExito}!</p>)}    
             <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-                <div className="flex flex-col gap-2">
-                    <label htmlFor="" className="text-[14px] text-gray-500">Username</label>
-                    <input name="username" onChange={handleChange} value={dataUser.username}
-                        className="p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cuarto"
+                    <Input
+                        labelName="Nombre de usuario"
+                        labelValue="username"
+                        name="username"
+                        type="text"
+                        required
+                        value={dataUser.username}
+                        onChange={handleChange}
                     />
-                </div>
-                <div className="flex flex-col gap-2">
-                    <label htmlFor="" className="text-[14px] text-gray-500">Password</label>
-                    <input name="password" type="password" onChange={handleChange} value={dataUser.password}
-                        className="p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cuarto" 
+                    <Input
+                        labelName="Contraseña"
+                        labelValue="password"
+                        name="password"
+                        type="password"
+                        required
+                        value={dataUser.password}
+                        onChange={handleChange}
                     />
-                </div>
                 {mensaje && (<p className="text-red-500 text-[13px]">{mensaje}</p>)}
                 <div>
                     <button type="submit" className="w-full flex justify-center mt-1 px[20px] py-[13px] bg-cuarto cursor-pointer border-none text-white font-medium rounded">

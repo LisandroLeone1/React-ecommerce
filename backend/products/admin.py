@@ -1,10 +1,20 @@
 from django.contrib import admin
-from .models import Categoria, Marca, Producto, Color, TalleIndumentaria, TalleCalzado, TalleAccesorio
+from .models import (
+    Talle, Marca, Color, TipoProducto, Disciplina, Producto, ImagenProducto
+)
 
-admin.site.register(Categoria)
+
+class ImagenProductoInline(admin.TabularInline):
+    model = ImagenProducto
+    extra = 1  # Número de formularios vacíos adicionales
+
+class ProductoAdmin(admin.ModelAdmin):
+    inlines = [ImagenProductoInline]
+
+admin.site.register(Talle)
 admin.site.register(Marca)
-admin.site.register(Producto)
+admin.site.register(Producto, ProductoAdmin)
 admin.site.register(Color)
-admin.site.register(TalleCalzado)
-admin.site.register(TalleIndumentaria)
-admin.site.register(TalleAccesorio)
+admin.site.register(TipoProducto)
+admin.site.register(Disciplina)
+admin.site.register(ImagenProducto)

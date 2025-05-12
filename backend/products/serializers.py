@@ -1,23 +1,11 @@
 from rest_framework import serializers
 from .models import (
-    TalleIndumentaria, TalleCalzado, TalleAccesorio, 
-    Marca, Categoria, Color, Producto
+    Talle, Marca, Color, TipoProducto, Disciplina, Producto, ImagenProducto
 )
 
-# Serializers para modelos básicos
-class TalleIndumentariaSerializer(serializers.ModelSerializer):
+class TalleSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TalleIndumentaria
-        fields = '__all__'
-
-class TalleCalzadoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TalleCalzado
-        fields = '__all__'
-
-class TalleAccesorioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TalleAccesorio
+        model = Talle
         fields = '__all__'
 
 class MarcaSerializer(serializers.ModelSerializer):
@@ -25,24 +13,33 @@ class MarcaSerializer(serializers.ModelSerializer):
         model = Marca
         fields = '__all__'
 
-class CategoriaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Categoria
-        fields = '__all__'
-
 class ColorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Color
         fields = '__all__'
 
-# Serializer de Producto con datos completos
+class TipoProductoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TipoProducto
+        fields = '__all__'
+
+class DisciplinaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Disciplina
+        fields = '__all__'
+
+class ImagenProductoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ImagenProducto
+        fields = ['id', 'imagen', 'orden']
+
 class ProductoSerializer(serializers.ModelSerializer):
     marca = MarcaSerializer()
-    categoria = CategoriaSerializer()
     colores = ColorSerializer(many=True)
-    talles_indumentaria = TalleIndumentariaSerializer(many=True)
-    talles_calzado = TalleCalzadoSerializer(many=True)
-    talles_accesorios = TalleAccesorioSerializer(many=True) # many quiere decir que un producto puede tener varios talles
+    tipo_producto = TipoProductoSerializer()
+    disciplina = DisciplinaSerializer()
+    talles = TalleSerializer(many=True)
+    imagenes = ImagenProductoSerializer(many=True, read_only=True)
 
     class Meta:
         model = Producto

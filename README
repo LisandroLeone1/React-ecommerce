@@ -1,3 +1,5 @@
+# ESPAÑOL
+
 # 🛍 E-commerce de Ropa (Fullstack con Django + React)
 
 Este proyecto es una plataforma de comercio electrónico desarrollada con React en el frontend y Django + Django REST Framework en el backend. Si bien está orientada inicialmente a la venta de ropa, la estructura es totalmente adaptable a cualquier tipo de productos.
@@ -164,13 +166,21 @@ También se incluye la carpeta `media/`, donde se almacenan todas las imágenes 
     - npm run dev
 
 
-### 📧 Contact
+### 📧 Contacto
 
 Proyecto desarrollado por Lisandro Leone
 GitHub: https://github.com/LisandroLeone1
 Email: leonelisandro@gmail.com
 
 
+
+
+------------
+
+
+
+
+# ENGLISH
 
 ## 🛍 Clothing E-commerce (Fullstack with Django + React)
 

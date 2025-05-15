@@ -4,8 +4,9 @@ __pycache__/
 .log
 .vscode/
 
-venv
+venv/
 .env
+env
 
 node_modules/
 *.lock

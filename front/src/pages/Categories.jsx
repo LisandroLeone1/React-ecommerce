@@ -4,6 +4,7 @@ import GetProducts from "../Api.jsx";
 import Cards from "../components/CardsProducts/Cards.jsx";
 import Aside from "../layout/Aside.jsx";
 import Bread from "../components/Bread.jsx";
+import Input from "../components/Inputs.jsx";
 
 const CategoriaPage = () => {
     const { categorie, filtro, tipo } = useParams();
@@ -176,10 +177,9 @@ const CategoriaPage = () => {
                             X
                         </span>
                     </button> 
-            ))}
-                {selectedFilters.length > 0 ? <button className="cursor-pointer text-gray-400 hover:text-gray-300 font-bold"
-                onClick={deleteAllFilters}>Borrar filtros</button> : '' }
-                
+                    ))}
+                    {selectedFilters.length > 0 ? <button className="cursor-pointer text-gray-400 hover:text-gray-300 font-bold"
+                        onClick={deleteAllFilters}>Borrar filtros</button> : '' }
                 </div>
                 <div className="flex gap-5 mt-5 md:mt-0">
                     <button
@@ -188,20 +188,22 @@ const CategoriaPage = () => {
                             <span className="text-sm font-medium">Filtrar</span>
                             <i className="bi bi-filter"></i>
                     </button>
-                        <select onChange={(e) => {
-                            setOrder(e.target.value)
-                            HandleOrderChange(e.target.value)}}
-                            value={order}
-                            className="bg-gray-100 hover:border-cuarto cursor-pointer p-3 border border-gray-300 rounded-md text-[14px] shadow-sm focus:outline-none focus:ring-2 focus:ring-cuarto focus:border-transparent transition duration-200">
-                            <option value="">Ordenar por..</option>
-                            <option value="precioAsc">Precio: Menor a Mayor</option>
-                            <option value="precioDesc">Precio: Mayor a Menor</option>
-                            <option value="nombreAsc">Nombre: A - Z</option>
-                            <option value="nombreDesc">Nombre: Z - A </option>
-                        </select>
-                        
+                    <Input
+                        labelValue="orden"
+                        type="select"
+                        value={order}
+                        onChange={(e) => {
+                        setOrder(e.target.value);
+                        HandleOrderChange(e.target.value);}}
+                        renderOptions={() => [
+                            <option key="" value="">Ordenar por..</option>,
+                            <option key="precioAsc" value="precioAsc">Precio: Menor a Mayor</option>,
+                            <option key="precioDesc" value="precioDesc">Precio: Mayor a Menor</option>,
+                            <option key="nombreAsc" value="nombreAsc">Nombre: A - Z</option>,
+                            <option key="nombreDesc" value="nombreDesc">Nombre: Z - A</option>,
+                            ]}
+                    />     
                 </div>
-                
             </div>
 
             {mostrarModal && (
@@ -239,32 +241,32 @@ const CategoriaPage = () => {
                 )}
 
         
-        <div className='grid md:grid-cols-[1fr_5fr]'>
+            <div className='grid md:grid-cols-[1fr_5fr]'>
 
-        {/* ASIDE */}
-        <aside className="hidden md:block border-r border-gray-300 ml-[40px]">
-        <Aside
-                            filtro={filtro}
-                            categorie={categorie}
-                            tipo={tipo}
-                            capitalizar={capitalizar}
-                            generosUnicos={generosUnicos}
-                            tiposUnicos={tiposUnicos}
-                            allFilters={allFilters}
-                            selectedFilters={selectedFilters}
-                            HandleChange={HandleChange}
-                            products={products}/>
-    </aside>
+            {/* ASIDE */}
+            <aside className="hidden md:block border-r border-gray-300 ml-[40px]">
+                <Aside
+                    filtro={filtro}
+                    categorie={categorie}
+                    tipo={tipo}
+                    capitalizar={capitalizar}
+                    generosUnicos={generosUnicos}
+                    tiposUnicos={tiposUnicos}
+                    allFilters={allFilters}
+                    selectedFilters={selectedFilters}
+                    HandleChange={HandleChange}
+                    products={products}/>
+            </aside>
 
-        {/* PRODUCTS CATEGORIA */}
-        <div className="grid justify-center gap-[20px] my-[20px] grid-cols-[repeat(auto-fit,_250px)] auto-rows-[390px]">
-            <Cards product={products} 
-                heigth='h-[443px]'
-                heightHover='h-[390px]'>
-            </Cards>
-        </div>  
-    </div>
+            {/* PRODUCTS CATEGORIA */}
+            <div className="grid justify-center gap-[20px] my-[20px] grid-cols-[repeat(auto-fit,_250px)] auto-rows-[390px]">
+                <Cards product={products} 
+                    heigth='h-[443px]'
+                    heightHover='h-[390px]'>
+                </Cards>
+            </div>  
         </div>
+    </div>
         
     );
 };

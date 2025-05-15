@@ -1,14 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect} from "react";
 import { useAuth } from "../context/AuthContext.jsx";
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate  } from 'react-router-dom';
 import Loader from '../components/Loader';
 import { CheckCircle } from 'lucide-react';
+import { formatearPrecio } from "../utils/formatPrecio.jsx";
+
 
 const PedidoConfirmado = () => {
     const { id } = useParams();
     const [pedido, setPedido] = useState();
     const [loading, setLoading] = useState(true);
     const { token } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchPedido = async () => {
@@ -23,6 +26,7 @@ const PedidoConfirmado = () => {
 
                 if (response.ok) {
                     const data = await response.json();
+                    console.log("Respuesta del backend:", data);
                     setPedido(data);
                 } else {
                     console.error('Error al cargar el pedido');
@@ -78,12 +82,11 @@ const PedidoConfirmado = () => {
                 <p className="text-gray-700">Teléfono: {pedido.telefono}</p>
                 <p className="text-gray-700">Tipo de envío: <strong>{pedido.tipo_envio}</strong></p>
             </div>
-
             <div className="mt-6 flex justify-between items-center">
-                <p className="text-lg font-semibold text-black">Total: ${parseFloat(pedido.total).toFixed(2)}</p>
+                <p className="text-lg font-semibold text-black">Total: ${formatearPrecio(pedido.total)}</p>
                 <button
                     onClick={() => navigate("/")}
-                    className="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
+                    className="px-4 py-2 bg-green-600 text-white cursor-pointer rounded-xl hover:bg-green-700 transition"
                 >
                     Volver al inicio
                 </button>

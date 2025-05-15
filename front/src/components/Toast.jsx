@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import Button from "./Button";
 
 const Toast = ({ producto, onClose, error }) => {
 
@@ -38,14 +39,18 @@ const Toast = ({ producto, onClose, error }) => {
 
                     </div>
                 </div>
-                <div className="absolute w-full px-2 top-118">
-                    <Link to="/cart"
-                        className="w-full flex justify-center mt-1 px[20px] py-[13px] bg-cuarto cursor-pointer border-none text-white font-medium rounded">
-                        Ver carrito
+                <div className="absolute w-full px-2 top-123">
+                    <Link to="/cart">
+                        <Button>
+                            Ver carrito
+                        </Button>
                     </Link>
+            
                     <Link to="/"
-                        className="w-full flex justify-center mt-1 px[20px] py-[13px] bg-quinto cursor-pointer border-none text-cuarto font-medium rounded">
-                        Ver mas productos
+                        className="flex justify-center mt-1">
+                        <Button fakeDisabled={true} extraClass="cursor-pointer">
+                            Ver mas productos
+                        </Button>
                     </Link>
                 </div>
             </div>

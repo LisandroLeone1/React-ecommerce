@@ -5,9 +5,10 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import Input from "../components/Inputs.jsx";
+import Button from "../components/Button.jsx";
+import { formatearPrecio } from "../utils/formatPrecio.jsx";
 
 const Pedidos = () => {
-    const [metodoEntrega, setMetodoEntrega] = useState("")
     const [formData, setFormData] = useState({
         nombre_completo: "",
         email: "",
@@ -19,13 +20,12 @@ const Pedidos = () => {
         metodo_pago: "tarjeta",
         tipo_envio: "",
     });  
+    const [errores, setErrores] = useState({});
 
     const { cartProducts, 
-        setCartProducts,
-        emptyCart,
         vaciarCarritoEnBackend,
         calcularTotalConDescuento, 
-        cantidadProducts} = useCart();
+        } = useCart();
 
         const { token } = useAuth();
         const navigate = useNavigate();
@@ -40,46 +40,51 @@ const Pedidos = () => {
     };
 
     const SubmitCompra = async (e) => {
-        e.preventDefault();
+    e.preventDefault();
 
-        const items = cartProducts.map(producto => ({
-            producto: producto.id,
-            cantidad: producto.cantidad,
-            color: producto.color.id,
-            talle: producto.talle.id,
-        }));
+    const items = cartProducts.map(producto => ({
+        producto: producto.id,
+        cantidad: producto.cantidad,
+        color: producto.color.id,
+        talle: producto.talle.id,
+    }));
 
-        try {
-            const response = await fetch("http://localhost:8000/pedidos/api/pedidos/agregar/", {
-                method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${token}`,
-                        },
-                        body: JSON.stringify({ items: items, total: total, ...formData, })
-            })
+    try {
+        const response = await fetch("http://localhost:8000/pedidos/api/pedidos/agregar/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify({ items: items, ...formData })
+        });
 
-            if (response.ok) {
-                const data = await response.json();
-                console.log("data que devuelve el backend", JSON.stringify(data));
-                const pedidoId=data.pedido.id;
-                toast.success("¡Compra realizada con éxito!");
-                vaciarCarritoEnBackend();
-                navigate(`/pedido-confirmado/${pedidoId}/`);
+        const data = await response.json();
+        console.log("Respuesta del backend:", data);
 
-            } else {
-                const data = await response.json();
-                console.error("Error en la compra:", data.error);
-                Object.entries(data).forEach(([campo, mensaje]) => {
-                    toast.error(`${mensaje}`);
-                });
-                toast.error(data.error);
-            }
-            
-        } catch (error) {
-            console.error("Error al enviar el carrito:", error);
+        if (data.code === "token_not_valid") { // si la sesion expira muestra el toast y redirije
+            toast.error("Tu sesión ha expirado. Por favor, iniciá sesión nuevamente.");
+            navigate("/login");
+            return;
         }
+
+        if (response.ok) {
+            const pedidoId = data.pedido.id;
+            toast.success("¡Compra realizada con éxito!");
+            vaciarCarritoEnBackend();
+            navigate(`/pedido-confirmado/${pedidoId}/`);
+        } else {
+            // si no hay productos agregados muestra un toast con el error
+            if (data.items && Array.isArray(data.items) && data.items[0]) {
+                toast.error(data.items[0]); 
+            }
+            setErrores(data);
+        }
+    } catch (error) {
+        console.error("Error al enviar el carrito:", error);
+        toast.error("Ocurrió un error al procesar tu pedido. Intentalo de nuevo.");
     }
+};
 
 
 
@@ -106,13 +111,13 @@ const Pedidos = () => {
                     <h2 className='text-3xl font-bold'>Entrega</h2>
                     <div>
                     <div className={`p-3 rounded flex justify-between mb-1 border ${
-                        formData.tipo_envio === "envio" ? "border-2 border-blue-500" : "border-gray-300"}`}>
+                        formData.tipo_envio === "domicilio" ? "border-2 border-blue-500" : "border-gray-300"}`}>
                         <div>
                             <input
                                 type="radio"
                                 name="tipo_envio"
-                                value="envio"
-                                checked={formData.tipo_envio === "envio"}
+                                value="domicilio"
+                                checked={formData.tipo_envio === "domicilio"}
                                 onChange={handleChange}
                             />
                             <span className="ml-4 text-[15px] font-medium">Envío a domicilio</span>
@@ -135,7 +140,7 @@ const Pedidos = () => {
                     </div>
                 </div>
                     
-                    {formData.tipo_envio === "envio" ? (
+                    {formData.tipo_envio === "domicilio" ? (
                         <>
                     <h2 className='text-3xl font-bold mt-7'>Datos del destinatario</h2>
                     <Input
@@ -155,7 +160,9 @@ const Pedidos = () => {
                         type="tel"
                         value={formData.telefono}
                         onChange={handleChange}
+                        error={errores.telefono}
                     />
+            
                     <Input
                         labelName="Provincia"
                         labelValue="provincia"
@@ -163,13 +170,19 @@ const Pedidos = () => {
                         type="text"
                         value={formData.provincia}
                         onChange={handleChange}
+                        error={errores.provincia}
                     />
-                    <div className="flex flex-col gap-2">
-                        <label htmlFor="" className="text-[14px] text-gray-500">Ciudad</label>
-                        <input name="ciudad" value={formData.ciudad} onChange={handleChange}
-                            className="p-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cuarto"
-                        />
-                    </div>
+
+                    <Input
+                        labelName="Ciudad"
+                        labelValue="ciudad"
+                        name="ciudad"
+                        type="text"
+                        value={formData.ciudad}
+                        onChange={handleChange}
+                        error={errores.ciudad}
+                    />
+                    
                     <Input
                         labelName="Codigo postal"
                         labelValue="codigo_postal"
@@ -180,6 +193,7 @@ const Pedidos = () => {
                         title="Código postal de 4 a 10 dígitos"
                         value={formData.codigo_postal}
                         onChange={handleChange}
+                        error={errores.codigo_postal}
                     />
                     <Input
                         labelName="Direccion"
@@ -188,7 +202,9 @@ const Pedidos = () => {
                         type="text"
                         value={formData.direccion}
                         onChange={handleChange}
+                        error={errores.direccion}
                     />
+                    
                     <Input
                         labelName="Metodo de pago"
                         labelValue="metodo_pago"
@@ -201,11 +217,11 @@ const Pedidos = () => {
                         { label: "Tarjeta de crédito", value: "credito" },
                         { label: "Transferencia bancaria", value: "transferencia" },
                         { label: "Efectivo", value: "efectivo" },]}
+                        error={errores.metodo_pago}
                     />
-                    <button className="w-full mt-1 md:mt-4 px[20px] py-[10px] bg-cuarto cursor-pointer border-none text-white font-medium rounded"
-                        type="submit">
+                    <Button type="submit" extraClass="mt-1 md:mt-4">
                             Finalizar compra
-                    </button>
+                        </Button>
                         </>
                     ): formData.tipo_envio === "retiro" ? (
                         <>
@@ -218,6 +234,7 @@ const Pedidos = () => {
                             required
                             value={formData.nombre_completo}
                             onChange={handleChange}
+                            error={errores.nombre_completo}
                         />
                         <Input
                             labelName="Telofono"
@@ -226,11 +243,11 @@ const Pedidos = () => {
                             type="tel"
                             value={formData.telefono}
                             onChange={handleChange}
+                            error={errores.telefono}
                         />
-                        <button className="w-full mt-1 md:mt-4 px[20px] py-[10px] bg-cuarto cursor-pointer border-none text-white font-medium rounded"
-                            type="submit">
-                                Finalizar compra
-                        </button>
+                        <Button type="submit" extraClass="mt-1 md:mt-4">
+                            Finalizar compra
+                        </Button>
                         </>
                         
                     ): null}
@@ -246,7 +263,7 @@ const Pedidos = () => {
                                         <h3 className="uppercase text-[13px]">{product.nombre}</h3>
                                         <span className="text-[13px]">x {product.cantidad}</span>
                                     </div>
-                                    <h3 className="mt-4 text-[15px]">${product.precio}</h3>
+                                    <h3 className="mt-4 text-[15px]">${formatearPrecio(product.precio)}</h3>
                             </div>
                         ))}
                     </div>
@@ -257,7 +274,7 @@ const Pedidos = () => {
                         </div>
                         <div className="flex justify-between mt-4">
                             <p className="font-bold text-[20px]">Total</p>
-                            <p className="font-bold text-[20px]">${total}</p>
+                            <p className="font-bold text-[20px]">${formatearPrecio(total)}</p>
                         </div>
                     </div>
                 </div>

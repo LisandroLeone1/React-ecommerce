@@ -9,17 +9,16 @@ const ProductDetail = lazy(() => import('./pages/ProductsDetail'));
 const Cart = lazy(() => import('./pages/Cart'));
 const Pedido = lazy(() => import('./pages/Pedidos'));
 const PedidoConfirmado = lazy(() => import('./pages/PedidoConfirmado'));
-const Register = lazy(() => import('./auth/Register'));
-const Login = lazy(() => import('./auth/Login'));
-const Account = lazy(() => import('./auth/Account'));
+const Register = lazy(() => import('./pages/auth/Register'));
+const Login = lazy(() => import('./pages/auth/Login'));
+const Account = lazy(() => import('./pages/auth/Account'));
 import Loader from './components/Loader';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from './context/AuthContext'; 
 import { useCart } from './context/CartContext';
 import { useNavigate } from "react-router-dom";
-import { toast } from 'react-toastify';
-import { LogOut } from 'lucide-react';
+
 
 function App() {
 

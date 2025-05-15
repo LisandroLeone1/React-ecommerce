@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
         const [user, setUser] = useState({}); 
         const [token, setToken] = useState(localStorage.getItem("token"));
         const [logoutReason, setLogoutReason] = useState(null);
+        const [showLoginToast, setShowLoginToast] = useState(false);
         const navigate = useNavigate();
         
         useEffect(() => {
@@ -84,8 +85,13 @@ import { useNavigate } from "react-router-dom";
             }
         }, [logoutReason, navigate]);
 
+        const triggerLoginToast = () => {
+            setShowLoginToast(true);
+            setTimeout(() => setShowLoginToast(false), 3000);
+        };
+
     return (
-        <AuthContext.Provider value={{ user, token, login, logout }}>
+        <AuthContext.Provider value={{ user, token, login, logout, showLoginToast, triggerLoginToast }}>
             {children}
         </AuthContext.Provider>
     );

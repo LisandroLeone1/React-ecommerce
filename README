@@ -1,0 +1,336 @@
+# 🛍 E-commerce de Ropa (Fullstack con Django + React)
+
+Este proyecto es una plataforma de comercio electrónico desarrollada con React en el frontend y Django + Django REST Framework en el backend. Si bien está orientada inicialmente a la venta de ropa, la estructura es totalmente adaptable a cualquier tipo de productos.
+
+Desarrollado como proyecto personal con fines formativos y profesionales, este e-commerce busca reflejar el flujo completo de una tienda online: desde la navegación de productos, autenticación de usuarios, carrito de compras persistente y simulación de proceso de compra.
+
+---
+
+## ⚙️ Tecnologías utilizadas
+
+- **Backend**: Python + Django
+- **API**: Django REST Framework (DRF)
+- **Frontend**: React
+- **Estilos**: Tailwind CSS + Bootstrap
+- **Autenticación**: JWT + Context API
+- **Base de datos**: SQLite
+- **Panel de administración**: Django Admin
+
+---
+
+## ✨ Funcionalidades principales
+
+###  Catálogo y navegación:
+
+- Página principal con carruseles, imágenes dinámicas y secciones destacadas
+- Navegación por categoría: indumentaria, calzado, accesorios, marcas y productos en oferta
+- Filtros dinámicos: por color, talle Y marca 
+- Ordenamiento por precio y orden alfabético
+- Breadcrumbs dinámicos
+- Buscador por nombre de producto o marca
+
+### 👤 Autenticación y usuarios:
+
+- Registro de usuarios con validaciones desde el serializer
+- Inicio de sesión con manejo de tokens JWT
+- Contexto de autenticación React para manejar la sesión en frontend
+
+### 🛒 Carrito de compras:
+
+- Carrito persistente (se guarda en backend por usuario), se carga al iniciar sesión,
+y se borra del frontend al cerrar sesión.
+- Para agregar productos al carrito se requiere de inicio de sesión.
+- Añadir productos con color, talle y cantidad
+- Edición de productos directamente desde el carrito
+- Eliminación de productos
+- Precio total de todo el carro de compras
+- Validaciones antes de confirmar la compra (stock, colores, talles, etc.)
+
+### 📦 Procesos de compra:
+
+- Elección de envío a domicilio o retiro en tienda
+- Formulario de datos según método de entrega
+- Validaciones completas desde el serializer antes de finalizar la compra. Se requiere productos validos, con colores y talles validos, informacion del usuario valida y un token valido.
+- Descuento automático del stock al completar un pedido.
+- Total calculado desde el backend, asegurando integridad y evitando manipulación en frontend.
+- Pagina de confirmación con datos del pedido obtenidos desde el backend.
+
+### 🧑‍💼 Panel de administración (Django Admin):
+
+- Gestión de productos, pedidos y carritos
+- Visualización detallada de cada transacción
+
+---
+
+## 💻 Frontend moderno y dinámico
+
+- Diseño responsive con **Tailwind CSS**
+- Carruseles interactivos y animaciones al pasar el mouse sobre imágenes
+- Modales personalizados y botones interactivos
+- Validaciones visuales y mensajes de error claros
+- Contadores dinámicos de cantidad
+- Breadcrumbs automáticos
+- Buscador con resultados en tiempo real
+
+---
+
+## 🧠 Lógica de negocio destacada
+
+- Este e-commerce no es solo una vitrina visual: implementa lógica de negocio pensada para un entorno real:
+- Cálculo de precios y totales en backend para evitar fraudes.
+- Validaciones integrales de productos y stock antes de confirmar pedidos.
+- Actualización automática del inventario al finalizar la compra.
+- Persistencia y relación entre usuarios y carritos/pedidos.
+- Estructura escalable con una API REST bien definida y segura.
+
+---
+
+## Proximas mejoras
+
+- Integración con pasarelas de pago (MercadoPago, Stripe).
+- Historial de compras para el usuario.
+- Mejora de performance con lazy loading y optimización de imágenes.
+- Footer
+- Sección de contacto
+
+
+## 📂 Estructura del proyecto
+
+ecommerce/
+├── backend/ # Proyecto Django (API REST y base de datos)
+│ ├── manage.py
+│ ├── db.sqlite3
+│ ├── requirements.txt
+│ ├── backend/ # App principal (puede incluir settings, urls, etc.)
+│ ├── productos/ # App Django para productos
+│ ├── users/ # App para manejo de usuarios y auth
+│ ├── cart/ # App para manejo del carro de compras
+│ ├── pedidos/ # App para manejo de los pedidos.
+│ └── media/ # Imágenes de productos, banners, etc.
+│
+├── front/ # Proyecto React (interfaz de usuario)
+│ ├── public/
+│ ├── src/
+│ │ ├── assets/
+│ │ ├── components/ # Componentes reutilizables
+│ │ ├── pages/ # Páginas principales del sitio
+│ │ ├── layout/ # Componentes principales de la app (header, aside)
+│ │ ├── context/ # Context API (auth, carrito)
+│ │ ├── services/ # Funciones para conectar con la API (proximo a agregar)
+│ │ ├── App.css
+│ │ ├── index.css
+│ │ ├── App.jsx
+│ │ └── main.jsx
+│ ├── tailwind.config.js
+│ └── package.json
+│
+├── .gitignore
+├── README.md
+└── .venv/ # Entorno virtual (excluido por gitignore)
+
+
+
+## 🗂 Base de datos y archivos multimedia
+
+Este proyecto incluye una base de datos SQLite (`db.sqlite3`) que contiene usuarios de prueba, productos con stock, y pedidos ya registrados para facilitar la navegación y demostración.
+
+También se incluye la carpeta `media/`, donde se almacenan todas las imágenes utilizadas por los productos, carruseles e ilustraciones del sitio. De esta manera, quienes clonen este repositorio podrán ver la app tal como fue diseñada, sin tener que cargar datos manualmente.
+
+
+## ✅ Cómo correr este proyecto localmente
+
+1)  - git clone https://github.com/LisandroLeone1/React-ecommerce
+    - cd React-ecommerce
+
+2) Configurar el backend (django): 
+    - cd backend
+    - python -m venv .venv
+    - source .venv/bin/activate  # En Windows: .venv\Scripts\activate
+
+    - pip install -r requirements.txt
+
+    # Aplicar migraciones
+    - python manage.py migrate
+
+    # Crear superusuario (opcional, si querés acceder al admin)
+    - python manage.py createsuperuser
+
+    # Levantar el servidor
+    - python manage.py runserver
+
+3) Confirgurar el frontend (React):
+    - cd front
+    - npm install
+    - npm run dev
+
+
+### 📧 Contact
+
+Proyecto desarrollado por Lisandro Leone
+GitHub: https://github.com/LisandroLeone1
+Email: leonelisandro@gmail.com
+
+
+
+## 🛍 Clothing E-commerce (Fullstack with Django + React)
+
+This project is a fully functional e-commerce platform built with React on the frontend and Django + Django REST Framework on the backend. While it's initially focused on clothing sales, the structure is easily adaptable to any type of product.
+
+Developed as a personal and professional learning project, this e-commerce site replicates a real-world online store flow: product browsing, user authentication, persistent shopping cart, and a purchase process simulation.
+
+---
+
+## ⚙️ Technologies Used
+
+- Backend: Python + Django
+- API: Django REST Framework (DRF)
+- Frontend: React
+- Styling: Tailwind CSS + Bootstrap
+- Authentication: JWT + React Context API
+- Database: SQLite
+- Admin Panel: Django Admin
+
+## ✨ Key Features
+
+### 🛍 Catalog & Navigation
+
+- Home page with carousels, dynamic - images, and highlighted sections
+- Category-based navigation: clothing, footwear, accessories, brands, and sales
+- Dynamic filters: by color, size, and brand
+- Sorting by price or alphabetical order
+- Dynamic breadcrumbs
+- Product search by name or brand
+
+### 👤 User Authentication
+
+- User registration with validations from the serializer
+- Login using JWT tokens
+- React Authentication Context to manage user session on frontend
+
+### 🛒 Shopping Cart
+
+- Persistent cart (stored in backend by user) that loads upon login and clears on logout
+- Requires login to add products to cart
+- Add products with color, size, and quantity
+- Edit or remove products directly from the cart
+- Display total price
+- Validations before confirming a purchase (stock, colors, sizes, etc.)
+
+### 📦 Checkout Process
+
+- Choose between home delivery or in-store pickup
+- Conditional form depending on delivery method
+- Full validation from the serializer before finalizing purchase: valid products, available colors/sizes, user info, and active token
+- Stock automatically reduced after successful purchase
+- Total calculated on the backend to ensure integrity and prevent frontend manipulation
+- Confirmation page with order details from backend
+
+### 🧑‍💼 Admin Panel (Django Admin)
+
+- Manage products, orders, and carts
+- Detailed view of each transaction
+
+---
+
+### 💻 Modern, Dynamic Frontend
+
+- Responsive design with Tailwind CSS
+- Interactive carousels and hover animations
+- Custom modals and interactive buttons
+- Real-time form validation and error messages
+- Quantity counters
+- Auto-generated breadcrumbs
+- Live search functionality
+
+---
+
+### 🧠 Real-World Business Logic
+
+- This app goes beyond basic e-commerce visuals and includes robust business logic:
+- Price and totals are calculated on the backend to prevent fraud
+- Comprehensive validations for products and stock before purchase
+- Inventory updates automatically after successful order
+- Persistent relationship between users and carts/orders
+- Well-structured, scalable REST API
+
+---
+
+### 🔧 Upcoming Improvements
+
+- Integration with payment gateways (MercadoPago, Stripe)
+- Order history for users
+- Performance improvements with lazy loading and image optimization
+- Footer section
+- Contact page
+
+## 📂 Project Structure
+
+ecommerce/
+├── backend/                # Django Project (API & DB)
+│   ├── manage.py
+│   ├── db.sqlite3
+│   ├── requirements.txt
+│   ├── backend/            # Main app (settings, urls, etc.)
+│   ├── productos/          # Products app
+│   ├── users/              # User management and auth
+│   ├── cart/               # Shopping cart app
+│   ├── pedidos/            # Orders app
+│   └── media/              # Product and banner images
+│
+├── front/                  # React Project (UI)
+│   ├── public/
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/     # Reusable components
+│   │   ├── pages/          # Main pages
+│   │   ├── layout/         # Core layout components (header, aside)
+│   │   ├── context/        # Auth and cart contexts
+│   │   ├── services/       # API logic (upcoming)
+│   │   ├── App.css
+│   │   ├── index.css
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── tailwind.config.js
+│   └── package.json
+│
+├── .gitignore
+├── README.md
+└── .venv/                  # Virtual 
+
+## 🗂 Database & Media Files
+
+This project includes a SQLite database (db.sqlite3) with demo users, preloaded products, and sample orders to facilitate testing and exploration.
+
+The media/ folder contains all the images used for products, carousels, and other site visuals—making it easy to view the full app experience after cloning, with no need for manual data input.
+
+
+## ✅ Running Locally
+
+Clone the repository:
+
+- git clone https://github.com/LisandroLeone1/React-ecommerce
+- cd React-ecommerce
+
+Set up the backend (Django):
+
+- cd backend
+- python -m venv .venv
+- source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+- pip install -r requirements.txt
+
+- python manage.py migrate         # Run migrations
+- python manage.py createsuperuser  # (Optional) Create superuser
+- python manage.py runserver       # Start the server
+
+Set up the frontend (React):
+
+- cd front
+- npm install
+- npm run dev
+
+### 📧 Contact
+
+Project developed by Lisandro Leone
+GitHub: https://github.com/LisandroLeone1
+Email: leonelisandro@gmail.com

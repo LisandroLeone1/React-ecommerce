@@ -4,8 +4,9 @@ import Contador from "../components/Contador/Contador.jsx";
 import { Link } from "react-router-dom";
 import { BiLoaderAlt } from "react-icons/bi";
 import { useAuth } from "../context/AuthContext.jsx";
-import { toast } from 'react-toastify';
-
+import Button from "../components/Button.jsx";
+import Input from "../components/Inputs.jsx";
+import { formatearPrecio } from "../utils/formatPrecio.jsx";
 
 
 const Cart = () => {
@@ -166,10 +167,10 @@ const Cart = () => {
                                                 {product.descuento > 0 ? (
                                                 <div className="flex gap-1 items-center"> 
                                                     <span className="text-tercero text-[11px] font-medium">{product.descuento}%</span>
-                                                    <h3 className="line-through text-gray-600 text-[13px]">${product.precio * product.cantidad}</h3>
+                                                    <h3 className="line-through text-gray-600 text-[13px]">${formatearPrecio(product.precio * product.cantidad)}</h3>
                                                 </div>
                                                 ): ''}
-                                                <h2 className="font-medium text-[20px]">${PrecioConDescuento(product.precio, product.descuento, product.cantidad)}</h2>
+                                                <h2 className="font-medium text-[20px]">${formatearPrecio(PrecioConDescuento(product.precio, product.descuento, product.cantidad))}</h2>
                                             </div>                
                                         </div>
                                     </div>
@@ -227,40 +228,52 @@ const Cart = () => {
                                     <h3 className="mt-7 ">
                                             Color: <span className="font-medium">{productoSeleccionado.color.nombre}</span>
                                     </h3>
-                                    <div className="w-[100%] mt-10">
-                                        <label htmlFor="talle" className="block mb-1 text-gray-700 text-[12px]">Talle</label>
-                                        <select name="talle" className="w-full p-3 border border-gray-400 rounded text-[15px] shadow-sm focus:outline-none focus:ring-2 focus:ring-cuarto focus:border-transparent transition duration-200"
-                                            value={nuevoTalle?.id || ""} onChange={(e) => { 
-                                                const id = parseInt(e.target.value);
-                                                const talleObj = productoSeleccionado.tallesDisponibles.find(talle => talle.id === id);
-                                                setNuevoTalle(talleObj); }
-                                            }> 
-                                            {productoSeleccionado.tallesDisponibles.map((talle) => (
-                                                <option key={talle.id} value={talle.id} className="p-1">
-                                                    {talle.nombre}
-                                                </option> ))}
-                                        </select>
+                                    
+                                    <div className="mt-10">
+                                    <Input
+                                        labelName="Talle"
+                                        labelValue="talle"
+                                        type="select"
+                                        value={nuevoTalle?.id || ""}
+                                        onChange={(e) => {
+                                            const id = parseInt(e.target.value);
+                                            const talleObj = productoSeleccionado.tallesDisponibles.find(talle => talle.id === id);
+                                                setNuevoTalle(talleObj);
+                                            }}
+                                        renderOptions={() =>
+                                                productoSeleccionado.tallesDisponibles.map((talle) => (
+                                                    <option key={talle.id} value={talle.id}>
+                                                        {talle.nombre}
+                                                    </option>
+                                                ))
+                                            }
+                                    />
                                     </div>
-                                    <div className="w-full mt-10">
-                                        <label htmlFor="talle" className="block mb-1 text-gray-700 text-[12px]">Cantidad</label>
-                                        <select name="cantidad" className="w-full p-3 border border-gray-400 rounded text-[15px] shadow-sm focus:outline-none focus:ring-2 focus:ring-cuarto focus:border-transparent transition duration-200"
-                                            value={nuevaCantidad} onChange={(e) => setNuevaCantidad(parseInt(e.target.value))}>
-                                            {[...Array(productoSeleccionado.stock)].map((_, i) => (
-                                                <option key={i + 1} value={i + 1}>
-                                                    {i + 1}
-                                                </option>
-                                            ))}
-                                        </select>
+                                    <div className="mt-10">
+                                        <Input
+                                            labelName="Cantidad"
+                                            labelValue="cantidad"
+                                            type="select"
+                                            value={nuevaCantidad}
+                                            onChange={(e) => setNuevaCantidad(parseInt(e.target.value))}
+                                                renderOptions={() =>
+                                                    [...Array(productoSeleccionado.stock)].map((_, i) => (
+                                                        <option key={i + 1} value={i + 1}>
+                                                            {i + 1}
+                                                        </option>
+                                                    ))
+                                            }/>
                                     </div>
-                                        <button className="w-full mt-15 px[20px] py-[10px]
-                                            bg-cuarto cursor-pointer border-none text-white font-medium rounded"
+                                    
+                                        <Button
                                             onClick={() => {
-                                                actualizarProducto(productoSeleccionado.id, productoSeleccionado.talle, productoSeleccionado.cantidad, nuevoTalle, nuevaCantidad);
-                                                setModalOpen(false);
-                                                handleLoading(productoSeleccionado.id, nuevoTalle.id);
-                                            }}>
+                                            actualizarProducto(productoSeleccionado.id, productoSeleccionado.talle, productoSeleccionado.cantidad, nuevoTalle, nuevaCantidad);
+                                            setModalOpen(false);
+                                            handleLoading(productoSeleccionado.id, nuevoTalle.id);
+                                            }}
+                                            extraClass="mt-15">
                                                 Actualizar
-                                        </button>
+                                        </Button>
                                             </div>
                                         </div>
                                     </div>
@@ -274,7 +287,7 @@ const Cart = () => {
                         </div>
                         <div className="flex justify-between mt-4 text-gray-600 text-[15px]">  
                                 <p>Productos {`(${cantidadProducts})`}</p>
-                                <p>${total}</p>
+                                <p>${formatearPrecio(total)}</p>
                         </div>
                         <div className="flex justify-between mt-1">
                             <p className="text-gray-600 text-[15px]">Envios</p>
@@ -286,17 +299,22 @@ const Cart = () => {
                         </Link>
                         <div className="flex justify-between mt-2 md:mt-6">
                             <p className="font-bold text-[20px]">Total</p>
-                            <p className="font-bold text-[20px]">${total}</p>
+                            <p className="font-bold text-[20px]">${formatearPrecio(total)}</p>
                         </div>
                         <Link to="/pedido">
-                            <button className={`w-full mt-1 md:mt-4 px[20px] py-[10px] border-none font-medium rounded 
-                            ${cartProducts.length === 0 ? 'cursor-not-allowed bg-septimo text-cuarto' : ' bg-cuarto cursor-pointer text-white' }`}
-                            disabled={cartProducts.length === 0}>
-                                Comprar
-                            </button>
+                            <Button
+                                disabled={cartProducts.length === 0}
+                                color={true}
+                                extraClass="mt-1 md:mt-4">
+                                    Comprar
+                            </Button>
+                        </Link>
+                        <Link to="/" className="flex justify-center mt-1">
+                            <Button fakeDisabled={true} extraClass="cursor-pointer">
+                                Ver mas productos
+                            </Button>
                         </Link>
                         
-                        <button className="w-full mt-1 px[20px] py-[10px] bg-quinto cursor-pointer border-none text-cuarto font-medium rounded hidden lg:block">Ver mas productos</button>
                     </div>
             </div>
 

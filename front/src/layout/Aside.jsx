@@ -62,7 +62,7 @@ const Aside = ({
             <div className="mb-10 mt-3">
                 <Link
                     to={`/${categorie}/`}
-                    className="text-[13px] flex items-center mb-[30px] text-gray-400"
+                    className="text-[13px] flex items-center mb-3 text-gray-400"
                 >
                     <i className="bi bi-caret-left"></i>
                     <span className="text-[14px] leading-none">
@@ -89,7 +89,7 @@ const Aside = ({
         <div>
             <Link
                 to={`/${categorie}/${filtro}`}
-                className="text-[13px] flex items-center mt-3 mb-[30px] text-gray-400"
+                className="text-[13px] flex items-center mt-3 mb-3 text-gray-400"
             >
                 <i className="bi bi-caret-left"></i>
                 <span className="text-[14px] leading-none">

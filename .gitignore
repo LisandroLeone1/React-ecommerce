@@ -1,0 +1,13 @@
+*.pyc
+__pycache__/
+.pyo
+.log
+.vscode/
+
+venv
+.env
+
+node_modules/
+*.lock
+*.cache
+.DS_Store

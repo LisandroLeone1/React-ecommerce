@@ -8,12 +8,13 @@ import { useNavigate } from "react-router-dom";
 import UserIcon from "../components/Header/UserIcon.jsx";
 
 
+
 export const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [showTopBar, setShowTopBar] = useState(true);
 
     const { cantidadProducts, emptyCart } = useCart();
-    const { user, logout} = useAuth(); 
+    const { user, logout, showLoginToast} = useAuth(); 
     const navigate = useNavigate();
 
     // funcion para ocultar el primer contenedor del header cuando se hace scroll para abajo
@@ -79,7 +80,7 @@ export const Header = () => {
                     <div className="hidden md:flex gap-[40px]">
 
                         <HelpIcon rightOrleft='left-256'/>
-                        <UserIcon user={user} logout={logout} emptyCart={emptyCart} absoluteClass="left-290" />
+                        <UserIcon user={user} logout={logout} emptyCart={emptyCart} />
                         <Link to="/cart" 
                                 className="relative text-[9px] decoration-0 text-white flex flex-col items-center p-[5px]">
                                 <i className="bi bi-cart4 text-[40px]"></i>
@@ -110,7 +111,7 @@ export const Header = () => {
                         <div className="w-full mr-[30px] flex justify-end md:hidden gap-[40px]">
 
                             <HelpIcon rightOrleft='left-40'/>
-                            <UserIcon user={user} logout={logout} emptyCart={emptyCart} absoluteClass="left-74" />
+                            <UserIcon user={user} logout={logout} emptyCart={emptyCart} />
                             <Link to="/cart" 
                                 className="relative text-[9px] decoration-0 text-white flex flex-col items-center p-[5px]">
                                 <i className="bi bi-cart4 text-[40px]"></i>

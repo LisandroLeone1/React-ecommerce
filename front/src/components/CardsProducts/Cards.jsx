@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import Button from "../Button";
+import { formatearPrecio } from "../../utils/formatPrecio";
 
 const Cards = ({product, heigth, heightHover}) => {
         const [img, setImg] = useState(0);
@@ -21,7 +23,7 @@ const Cards = ({product, heigth, heightHover}) => {
                 ease-in-out hover:shadow-[0_4px_20px_rgba(0,0,0,0.8)] hover:z-[1] ${buttonVisible === producto.id ? heigth : heightHover}`
                 }>
 
-                <img src={img === producto.id ? producto.imagenes[2]?.imagen : producto.imagenes[1]?.imagen} 
+                <img src={img === producto.id ? producto.imagenes[1]?.imagen : producto.imagenes[0]?.imagen} 
                     onMouseEnter={() => setImg(producto.id)}
                     onMouseLeave={() => setImg(null)}
                     className=""></img>
@@ -42,20 +44,22 @@ const Cards = ({product, heigth, heightHover}) => {
                     </div>
                     ) : null}
 
-                    <h5 className="text-[22px] font-normal">${producto.precio}</h5>
+                    <h5 className="text-[22px] font-normal">${formatearPrecio(producto.precio)}</h5>
                     <div className="flex justify-between items-center">
                         <h6 className='font-medium text-[12px]'>
                             <span className='font-bold'>3 </span>
-                                cuotas de 
+                                cuotas de  
                             <span className="font-bold">
-                                ${PrecioEnCuotas(producto.precio)}
+                                 ${formatearPrecio(PrecioEnCuotas(producto.precio))}
                             </span>
                         </h6>
                         <p className='p-[3px] bg-tercero text-white mr-[5px] text-[10px] font-bold'>Envio gratis</p>
                     </div>
                     <div className="card-footer">
                         <Link to={`/producto/${producto.id}/`}>
-                            <button className="w-full p-[10px] bg-blue-500 text-white mt-[15px] rounded-md border-none text-[15px] uppercase font-semibold hover:bg-blue-600 transition-all duration-300 ease-in-out" ><a href="">comprar</a></button>
+                            <Button extraClass="uppercase text-[15px] mt-[15px] font-semibold hover:bg-blue-600 transition-all duration-300 ease-in-out">
+                                comprar
+                            </Button>
                         </Link>
                     </div>
                 </div>
